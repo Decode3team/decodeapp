@@ -8,26 +8,28 @@ import { useRef } from "react";
 export type NavData = {
   name: string;
   href: string;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
 };
 
 function MainNav({ collapsed, data }: { collapsed: boolean; data: NavData }) {
-  const router = useRouter();
   const nodeRef = useRef(null);
-  const Icon = data.icon;
 
   return (
     <Link
       href={data.href}
       className={cn(
-        "flex w-full rounded-sm hover:bg-stone-700 text-white cursor-pointer flex-nowrap gap-2 p-2",
+        "flex w-full rounded-sm dark:hover:bg-stone-700 dark:text-white cursor-pointer flex-nowrap p-2 transition-colors duration-200 ease-in-out",
         collapsed ? "justify-center" : "items-center"
       )}
     >
-      {data.icon}
+      <div className="flex flex-shrink-0">{data.icon || null}</div>
       <div
         ref={nodeRef}
-        className={cn("ml-2 whitespace-nowrap", collapsed ? "hidden" : "")}
+        className={cn(
+          "whitespace-nowrap flex flex-shrink-0",
+          collapsed ? "hidden" : "",
+          data.icon ? "pl-3" : ""
+        )}
       >
         {data.name}
       </div>
