@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import TRPCProvider from "./_trpc/TRPCProvider";
+import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,7 +18,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body
+        className={cn(inter.className, "bg-stone-950")}
+        suppressHydrationWarning={true}
+      >
         <TRPCProvider>{children}</TRPCProvider>
       </body>
     </html>

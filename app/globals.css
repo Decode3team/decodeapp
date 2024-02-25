@@ -4,6 +4,7 @@
  
 @layer base {
   :root {
+    --decode: #B1EF07;
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
 
