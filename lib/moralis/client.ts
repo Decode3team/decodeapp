@@ -1,3 +1,4 @@
+import { BlockchainDataProvider } from "../providers/BlockchainDataProvider";
 import {
   RisingLiquidityTokenParams,
   TopBuyPressureTokenParams,
@@ -66,5 +67,23 @@ class MoralisDiscoveryApi {
   async getRiskyBetTokens(params: RiskyBetTokenParams):Promise<DiscoveryTokenData[]> {
     const requestUrl = `${this.discoveryApiUrl}/risky-bets?chain=${params.chain}`;
     return doFetch<DiscoveryTokenData[]>(requestUrl, this.settings.httpOptions);
+  }
+
+  async getAllTokenData():Promise<DiscoveryTokenData[]> {
+    const requests:Promise<DiscoveryTokenData[]>[] = []
+    const dataProvider = new BlockchainDataProvider();
+
+    dataProvider
+      .getData()
+      .forEach((chain) => {
+        requests.push(this.getRisingLiquidityTokens({ chain: chain}))
+        requests.push(this.getTopBuyPressureTokens({ chain: chain}))
+        requests.push(this.getExperiencedBuyerTokens({ chain: chain}))
+        requests.push(this.getSolidPerformanceTokens({ chain: chain}))
+        requests.push(this.getBlueChipTokens({ chain: chain}))
+        requests.push(this.getRiskyBetTokens({ chain: chain}))
+      });
+
+    return Promise.all(requests).then(d => d[0]);
   }
 }

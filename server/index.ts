@@ -28,35 +28,14 @@ export const appRouter = router({
   // APPLY CACHNING
   // SAVE TO DB
   discovery: publicProcedure.query(async () => {
-    const httpOptions = {
-      headers: {
-        "accept": "application/json",
-        "X-API-Key": process.env.MORALIS_API_KEY ?? "",
-      },
-    };
-
     const tempKey = "token_discovery";
     const redisClient = new RedisClient();
     const existingData = await redisClient.get(tempKey);
 
     if (existingData) return JSON.parse(existingData);
 
-    const requests:Promise<DiscoveryTokenData[]>[] = []
-    const dataProvider = new BlockchainDataProvider();
     const moralisClient = new MoralisClient();
-
-    dataProvider
-      .getData()
-      .forEach((chain) => {
-        requests.push(moralisClient.Discovery.getRisingLiquidityTokens({ chain: chain}))
-        requests.push(moralisClient.Discovery.getTopBuyPressureTokens({ chain: chain}))
-        requests.push(moralisClient.Discovery.getExperiencedBuyerTokens({ chain: chain}))
-        requests.push(moralisClient.Discovery.getSolidPerformanceTokens({ chain: chain}))
-        requests.push(moralisClient.Discovery.getBlueChipTokens({ chain: chain}))
-        requests.push(moralisClient.Discovery.getRiskyBetTokens({ chain: chain}))
-      });
-
-    const responseData = await Promise.all(requests).then(d => d[0]);
+    const responseData = await moralisClient.Discovery.getAllTokenData();
 
     const uniqueTokenAddresses = new Set();
     const uniqueData = responseData.filter((d) => {
