@@ -1,8 +1,7 @@
-import { pgTable, varchar, json } from "drizzle-orm/pg-core";
+import { pgTable, json, uuid, date } from "drizzle-orm/pg-core";
 
-export const discoveryData = pgTable("discovery-data", {
-  token_address: varchar("token_address").primaryKey().unique(),
-  chain_id: varchar("chain_id_hex"),
-  token_name: varchar("token_name"),
-  token_data: json("token_data"),
+export const tokenData = pgTable("token-data", {
+  id: uuid("id").primaryKey(),
+  data: json("data"),
+  create_at: date("create_at", { mode: "date"})
 });

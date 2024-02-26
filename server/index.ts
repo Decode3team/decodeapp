@@ -1,6 +1,11 @@
 import { z } from "zod";
 import { publicProcedure, router } from "./trpc";
 import { RedisClient } from "@/lib/redis/client";
+import { BlockchainDataProvider } from "@/lib/providers/BlockchainDataProvider";
+import { DiscoveryTokenData } from "@/lib/moralis/types";
+import { TokenData } from "./models/TokenData";
+import { formatNumber } from "@/lib/utils";
+import { MoralisClient } from "@/lib/moralis/client";
 
 export const appRouter = router({
   getTodos: publicProcedure.query(async () => {
@@ -25,8 +30,8 @@ export const appRouter = router({
   discovery: publicProcedure.query(async () => {
     const httpOptions = {
       headers: {
-        accept: "application/json",
-        "X-API-Key": process.env.MORALIS_API_KEY,
+        "accept": "application/json",
+        "X-API-Key": process.env.MORALIS_API_KEY ?? "",
       },
     };
 
@@ -36,65 +41,48 @@ export const appRouter = router({
 
     if (existingData) return JSON.parse(existingData);
 
-    const requests = [];
-    const chains = [
-      "eth",
-      "polygon",
-      "binance",
-      "arbitrum",
-      "optimism",
-      "fantom",
-      "pulsechain",
-    ];
+    const requests:Promise<DiscoveryTokenData[]>[] = []
+    const dataProvider = new BlockchainDataProvider();
+    const moralisClient = new MoralisClient();
 
-    chains.forEach((chain) => {
-      requests.push(
-        fetch(
-          `https://deep-index.moralis.io/api/v2.2/discovery/tokens/rising-liquidity?chain=${chain}`,
-          httpOptions
-        ).then((res) => res.json())
-      );
-      requests.push(
-        fetch(
-          `https://deep-index.moralis.io/api/v2.2/discovery/tokens/buying-pressure?chain=${chain}`,
-          httpOptions
-        ).then((res) => res.json())
-      );
-      requests.push(
-        fetch(
-          `https://deep-index.moralis.io/api/v2.2/discovery/tokens/experienced-buyers?chain=${chain}`,
-          httpOptions
-        ).then((res) => res.json())
-      );
-      requests.push(
-        fetch(
-          `https://deep-index.moralis.io/api/v2.2/discovery/tokens/solid-performers?chain=${chain}`,
-          httpOptions
-        ).then((res) => res.json())
-      );
-      requests.push(
-        fetch(
-          `https://deep-index.moralis.io/api/v2.2/discovery/tokens/blue-chip?chain=${chain}`,
-          httpOptions
-        ).then((res) => res.json())
-      );
-      requests.push(
-        fetch(
-          `https://deep-index.moralis.io/api/v2.2/discovery/tokens/risky-bets?chain=${chain}`,
-          httpOptions
-        ).then((res) => res.json())
-      );
+    dataProvider
+      .getData()
+      .forEach((chain) => {
+        requests.push(moralisClient.Discovery.getRisingLiquidityTokens({ chain: chain}))
+        requests.push(moralisClient.Discovery.getTopBuyPressureTokens({ chain: chain}))
+        requests.push(moralisClient.Discovery.getExperiencedBuyerTokens({ chain: chain}))
+        requests.push(moralisClient.Discovery.getSolidPerformanceTokens({ chain: chain}))
+        requests.push(moralisClient.Discovery.getBlueChipTokens({ chain: chain}))
+        requests.push(moralisClient.Discovery.getRiskyBetTokens({ chain: chain}))
+      });
+
+    const responseData = await Promise.all(requests).then(d => d[0]);
+
+    const uniqueTokenAddresses = new Set();
+    const uniqueData = responseData.filter((d) => {
+      if (!uniqueTokenAddresses.has(d)) {
+        uniqueTokenAddresses.add(d.token_address);
+        return true;
+      }
+      return false;
     });
 
-    const responseData = await Promise.all(requests);
-    const uniqueData = Array.from(
-      new Set(responseData.map((d) => d.token_address))
-    ).map((token_address) =>
-      responseData.find((d) => d.token_address === token_address)
-    );
+    let total_market_cap = 0;
+    let total_volume = 0;
 
-    await redisClient.set(tempKey, JSON.stringify(uniqueData));
-    return uniqueData;
+    uniqueData.forEach(d => {
+      total_market_cap += d.market_cap;
+      total_volume += d.volume_change_usd["1d"];
+    });
+
+    const tokenData:TokenData = {
+      total_market_cap: formatNumber(total_market_cap),
+      total_volume: formatNumber(total_volume),
+      tokens: uniqueData
+    };
+    
+    await redisClient.set(tempKey, JSON.stringify(tokenData));
+    return tokenData;
   }),
 });
 
