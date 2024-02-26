@@ -1,19 +1,11 @@
 import { z } from "zod";
 import { publicProcedure, router } from "./trpc";
 import { RedisClient } from "@/lib/redis/client";
-import { BlockchainDataProvider } from "@/lib/providers/BlockchainDataProvider";
-import { DiscoveryTokenData } from "@/lib/moralis/types";
 import { TokenData } from "./models/TokenData";
 import { formatNumber } from "@/lib/utils";
 import { MoralisClient } from "@/lib/moralis/client";
 
 export const appRouter = router({
-  getTodos: publicProcedure.query(async () => {
-    console.log("number");
-
-    return [10, 20, 30];
-  }),
-
   hello: publicProcedure
     .input(
       z.object({
@@ -24,9 +16,8 @@ export const appRouter = router({
       return `Hello, ${input.name}`;
     }),
 
-  // TODO CLEAN UP DUTY
-  // APPLY CACHNING
-  // SAVE TO DB
+  // TODO: CLEAN UP DUTY
+  // TODO: SAVE TO DB
   discovery: publicProcedure.query(async () => {
     const tempKey = "token_discovery";
     const redisClient = new RedisClient();

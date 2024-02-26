@@ -19,3 +19,19 @@ export function formatNumber(value: number) {
   
   return formattedValue + suffixes[suffixIndex];
 }
+
+type QueryParams = {
+  [key: string]: string | number | boolean | undefined;
+};
+
+export function generateQueryString<T extends QueryParams>(params: T): string {
+  const queryStringArray: string[] = [];
+
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== null && value !== undefined) {
+      queryStringArray.push(`${key}=${encodeURIComponent(String(value))}`);
+    }
+  }
+
+  return queryStringArray.join('&');
+}

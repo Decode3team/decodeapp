@@ -1,4 +1,5 @@
-import { BlockchainDataProvider } from "../providers/BlockchainDataProvider";
+import { BlockchainDataProvider } from "../providers/blockchain-data-provider";
+import { generateQueryString } from "../utils";
 import {
   RisingLiquidityTokenParams,
   TopBuyPressureTokenParams,
@@ -45,27 +46,33 @@ class MoralisDiscoveryApi {
   }
 
   async getRisingLiquidityTokens(params: RisingLiquidityTokenParams):Promise<DiscoveryTokenData[]> {
-    const requestUrl = `${this.discoveryApiUrl}/rising-liquidity?chain=${params.chain}`;
+    const queryString = generateQueryString(params);
+    const requestUrl = `${this.discoveryApiUrl}/rising-liquidity?${queryString}`;
     return doFetch<DiscoveryTokenData[]>(requestUrl, this.settings.httpOptions);
   }
   async getTopBuyPressureTokens(params: TopBuyPressureTokenParams):Promise<DiscoveryTokenData[]> {
-    const requestUrl = `${this.discoveryApiUrl}/buying-pressure?chain=${params.chain}`;
+    const queryString = generateQueryString(params);
+    const requestUrl = `${this.discoveryApiUrl}/buying-pressure?${queryString}`;
     return doFetch<DiscoveryTokenData[]>(requestUrl, this.settings.httpOptions);
   }
   async getExperiencedBuyerTokens(params: ExperiencedBuyerTokenParams):Promise<DiscoveryTokenData[]> {
-    const requestUrl = `${this.discoveryApiUrl}/experienced-buyers?chain=${params.chain}`;
+    const queryString = generateQueryString(params);
+    const requestUrl = `${this.discoveryApiUrl}/experienced-buyers?${queryString}`;
     return doFetch<DiscoveryTokenData[]>(requestUrl, this.settings.httpOptions);
   }
   async getSolidPerformanceTokens(params: SolidPerformanceTokenParams):Promise<DiscoveryTokenData[]> {
-    const requestUrl = `${this.discoveryApiUrl}/solid-performers?chain=${params.chain}`;
+    const queryString = generateQueryString(params);
+    const requestUrl = `${this.discoveryApiUrl}/solid-performers?${queryString}`;
     return doFetch<DiscoveryTokenData[]>(requestUrl, this.settings.httpOptions);
   }
   async getBlueChipTokens(params: BlueChipTokenParams):Promise<DiscoveryTokenData[]> {
-    const requestUrl = `${this.discoveryApiUrl}/blue-chip?chain=${params.chain}`;
+    const queryString = generateQueryString(params);
+    const requestUrl = `${this.discoveryApiUrl}/blue-chip?${queryString}`;
     return doFetch<DiscoveryTokenData[]>(requestUrl, this.settings.httpOptions);
   }
   async getRiskyBetTokens(params: RiskyBetTokenParams):Promise<DiscoveryTokenData[]> {
-    const requestUrl = `${this.discoveryApiUrl}/risky-bets?chain=${params.chain}`;
+    const queryString = generateQueryString(params);
+    const requestUrl = `${this.discoveryApiUrl}/risky-bets?${queryString}`;
     return doFetch<DiscoveryTokenData[]>(requestUrl, this.settings.httpOptions);
   }
 
@@ -87,3 +94,4 @@ class MoralisDiscoveryApi {
     return Promise.all(requests).then(d => d[0]);
   }
 }
+
