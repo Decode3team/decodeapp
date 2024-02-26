@@ -1,0 +1,6 @@
+/.vscode
+/.docker
+/.docker_data
+/.next
+docker-compose*.yml
+Dockerfile*
