@@ -21,8 +21,13 @@ import {
   PieChart,
 } from "lucide-react";
 import Link from "next/link";
+import { serverClient } from "./_trpc/serverClient";
 
-export default function Home() {
+export default async function Home() {
+  const test = await serverClient.discovery();
+
+  console.log(">>>>>", test[0]);
+
   return (
     <div className="flex w-full flex-col gap-4">
       <Card>
@@ -38,7 +43,7 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">$1.98T</div>
-            <Badge className="bg-red-600 hover:bg-red-600">-0.34%</Badge>
+            {/* <Badge className="bg-red-600 hover:bg-red-600">-0.34%</Badge> */}
           </CardContent>
         </Card>
         <Card>
@@ -50,7 +55,7 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">$6.19B</div>
-            <Badge className="bg-green-600 hover:bg-green-600">+1.07%</Badge>
+            {/* <Badge className="bg-green-600 hover:bg-green-600">+1.07%</Badge> */}
           </CardContent>
         </Card>
         <Card>
@@ -62,7 +67,7 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">$6,332,086</div>
-            <Badge className="bg-green-600 hover:bg-green-600">+0.22%</Badge>
+            {/* <Badge className="bg-green-600 hover:bg-green-600">+0.22%</Badge> */}
           </CardContent>
         </Card>
       </div>
