@@ -17,6 +17,7 @@ export class DefinedApiTokenClient {
     const networkClient = new DefinedApiNetworkClient(this.client);
     const networks = await networkClient.getNetworks();
     const queryName = 'listTopTokens';
+
     return this.client
       .query<DefinedTopTokenModel[]>(
         queryName,
@@ -48,14 +49,20 @@ export class DefinedApiTokenClient {
                 }
             }`,
       )
+
       .then(async (res) => {
         const existingData = await this.redisClient.get(CacheKeys.TOP_TOKEN[resolution]);
-        if (existingData) return JSON.parse(existingData) as DefinedTopTokenModel[];
+
+        if (existingData) {
+          return JSON.parse(existingData) as DefinedTopTokenModel[];
+        }
+
         await this.redisClient.set(
           CacheKeys.TOP_TOKEN[resolution],
           JSON.stringify(res),
           TimeResolution[resolution],
         );
+
         return res;
       });
   }

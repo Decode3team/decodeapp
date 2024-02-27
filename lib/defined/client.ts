@@ -19,8 +19,8 @@ export class DefinedApiClient {
       return this.client
         .post<DefinedApiResponse<T>>('', { query })
         .then((res: AxiosResponse<DefinedApiResponse<T>>) => res.data.data[operationName]);
-    } catch (error: any) {
-      throw new Error(`DefinedAPI request failed: ${error.message}`);
+    } catch (error) {
+      throw new Error(`DefinedAPI request failed: ${error}`);
     }
   }
 }
