@@ -10,9 +10,13 @@ export class RedisClient {
     });
   }
 
-  async set(key: string, value: any) {
+  async set(key: string, value: any, expirationInSeconds?: number) {
     try {
-      await this.client.set(key, value);
+      const args: [string, any] = [key, value];
+      if (expirationInSeconds) {
+        args.push(...["EX", expirationInSeconds])
+      }
+      await this.client.set(...args);
       console.log(`Key "${key}" set with value "${value}"`);
     } catch (error) {
       console.error('Error setting key:', error);
@@ -22,9 +26,7 @@ export class RedisClient {
   async get(key: string) {
     try {
       const result = await this.client.get(key);
-
       console.log(`Value of key "${key}":`, result);
-
       return result;
     } catch (error) {
       console.error('Error getting key:', error);

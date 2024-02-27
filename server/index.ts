@@ -1,11 +1,12 @@
-import { z } from 'zod';
-
-import { MoralisClient } from '@/lib/moralis/client';
-import { RedisClient } from '@/lib/redis/client';
-import { formatNumber } from '@/lib/utils';
-
-import { TokenData } from './models/TokenData';
-import { publicProcedure, router } from './trpc';
+import { z } from "zod";
+import { publicProcedure, router } from "./trpc";
+import { RedisClient } from "@/lib/redis/client";
+import { TokenData } from "./models/TokenData";
+import { formatNumber } from "@/lib/utils";
+import { DefinedApiClient } from "@/lib/defined/client";
+import { DefinedApiNetworkClient } from "@/lib/defined/network";
+import { DefinedNetworkModel } from "@/lib/defined/types";
+import { DefinedApiTokenClient } from "@/lib/defined/token";
 
 export const appRouter = router({
   hello: publicProcedure
@@ -20,45 +21,17 @@ export const appRouter = router({
 
   // TODO: CLEAN UP DUTY
   // TODO: SAVE TO DB
-  discovery: publicProcedure.query(async () => {
-    const tempKey = 'token_discovery';
-    const redisClient = new RedisClient();
-    const existingData = await redisClient.get(tempKey);
-
-    if (existingData) return JSON.parse(existingData) as TokenData;
-
-    const moralisClient = new MoralisClient();
-    const responseData = await moralisClient.Discovery.getAllTokenData();
-
-    const uniqueTokenAddresses = new Set();
-    const uniqueData = responseData.filter((d) => {
-      if (!uniqueTokenAddresses.has(d)) {
-        uniqueTokenAddresses.add(d.token_address);
-
-        return true;
-      }
-
-      return false;
-    });
-
-    let total_market_cap = 0;
-    let total_volume = 0;
-
-    uniqueData.forEach((d) => {
-      total_market_cap += d.market_cap;
-      total_volume += d.volume_change_usd['1d'];
-    });
-
-    const tokenData: TokenData = {
-      total_market_cap: formatNumber(total_market_cap),
-      total_volume: formatNumber(total_volume),
-      tokens: uniqueData,
-    };
-
-    await redisClient.set(tempKey, JSON.stringify(tokenData));
-
-    return tokenData;
-  }),
+  ["top-tokens"]: publicProcedure
+    // .input(
+    //   z.object({
+    //     resolution: z.string(),
+    //   })
+    // )
+    .query(async () => {
+      const client = new DefinedApiClient();
+      const tokenClient = new DefinedApiTokenClient(client);
+      return tokenClient.getTopTokens();
+    }),
 });
 
 export type AppRouter = typeof appRouter;
