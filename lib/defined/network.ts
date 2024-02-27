@@ -27,7 +27,7 @@ export class DefinedApiNetworkClient {
       const availableBlockChains = dataProvider.getData();
       const data = res.filter((d) => availableBlockChains.indexOf(d.name) !== -1);
 
-      await redisClient.set(CacheKeys.NETWORK_DATA, JSON.stringify(data), TimeResolution["60"]);
+      await redisClient.set(CacheKeys.NETWORK_DATA, JSON.stringify(data), TimeResolution[60]);
       return data;
     })
   }

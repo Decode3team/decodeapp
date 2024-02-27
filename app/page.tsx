@@ -14,10 +14,6 @@ import { cn } from '@/lib/utils';
 import { serverClient } from './_trpc/serverClient';
 
 export default async function Home() {
-  const test = await serverClient.discovery();
-
-  console.log('>>>>>', test);
-
   return (
     <div className="flex w-full flex-col gap-4">
       <Card>
