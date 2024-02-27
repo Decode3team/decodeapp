@@ -14,7 +14,7 @@ export class RedisClient {
     try {
       const args: [string, any] = [key, value];
       if (expirationInSeconds) {
-        args.push(...["EX", expirationInSeconds])
+        args.push(...['EX', expirationInSeconds]);
       }
       await this.client.set(...args);
       console.log(`Key "${key}" set with value "${value}"`);

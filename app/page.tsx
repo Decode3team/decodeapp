@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/sheet';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
-import { serverClient } from './_trpc/serverClient';
 
 export default async function Home() {
   return (
