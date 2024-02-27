@@ -60,3 +60,5 @@ export const appRouter = router({
     return tokenData;
   }),
 });
+
+export type AppRouter = typeof appRouter;

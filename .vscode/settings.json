@@ -1,10 +1,5 @@
 {
-  "cSpell.words": [
-    "lucide",
-    "Todos",
-    "trpc",
-    "Watchlist"
-  ],
+  "cSpell.words": ["lucide", "Todos", "trpc", "Watchlist"],
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true
 }
