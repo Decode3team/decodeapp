@@ -2,18 +2,27 @@
   "extends": [
     "prettier",
     "next/core-web-vitals",
+    "universe/shared/typescript-analysis",
     "universe/web",
-    "universe/shared/typescript-analysis"
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended"
   ],
   "overrides": [
     {
-      "files": ["*.ts", "*.tsx"],
+      "files": [
+        "*.ts",
+        "*.tsx"
+      ],
       "parserOptions": {
         "project": "./tsconfig.json"
       }
     }
   ],
-  "plugins": ["prettier"],
+  "plugins": [
+    "prettier",
+    "react",
+    "react-hooks"
+  ],
   "rules": {
     "prettier/prettier": [
       "error",
@@ -26,6 +35,7 @@
         "endOfLine": "auto"
       }
     ],
+    "react/prop-types": "off",
     "no-console": "warn",
     "import/order": "off",
     "react/jsx-filename-extension": "off",
@@ -37,13 +47,22 @@
       "error",
       {
         "blankLine": "always",
-        "prev": ["const", "let"],
+        "prev": [
+          "const",
+          "let"
+        ],
         "next": "*"
       },
       {
         "blankLine": "any",
-        "prev": ["const", "let"],
-        "next": ["const", "let"]
+        "prev": [
+          "const",
+          "let"
+        ],
+        "next": [
+          "const",
+          "let"
+        ]
       }
     ]
   }
