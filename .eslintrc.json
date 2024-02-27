@@ -1,3 +1,50 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": [
+    "prettier",
+    "next/core-web-vitals",
+    "universe/web",
+    "universe/shared/typescript-analysis"
+  ],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "parserOptions": {
+        "project": "./tsconfig.json"
+      }
+    }
+  ],
+  "plugins": ["prettier"],
+  "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "singleQuote": true,
+        "printWidth": 100,
+        "bracketSameLine": true,
+        "tabWidth": 2,
+        "bracketSpacing": true,
+        "endOfLine": "auto"
+      }
+    ],
+    "no-console": "warn",
+    "import/order": "off",
+    "react/jsx-filename-extension": "off",
+    "react/react-in-jsx-scope": "off",
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "newline-before-return": "error",
+    "padding-line-between-statements": [
+      "error",
+      {
+        "blankLine": "always",
+        "prev": ["const", "let"],
+        "next": "*"
+      },
+      {
+        "blankLine": "any",
+        "prev": ["const", "let"],
+        "next": ["const", "let"]
+      }
+    ]
+  }
 }

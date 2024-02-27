@@ -1,5 +1,5 @@
-"use client";
-import { trpc } from "@/app/_trpc/client";
+'use client';
+import { trpc } from '@/app/_trpc/client';
 
 export default function Test() {
   const getTodos = trpc.getTodos.useQuery();

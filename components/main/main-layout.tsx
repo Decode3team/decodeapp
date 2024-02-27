@@ -1,24 +1,17 @@
-"use client";
-import * as React from "react";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import { cn } from "@/lib/utils";
-import MainDecode from "./main-decode";
-import MainNav, { NavData } from "./main-nav";
-import { Separator } from "../ui/separator";
+'use client';
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+
+import MainDecode from './main-decode';
+import MainNav, { NavData } from './main-nav';
+import { Separator } from '../ui/separator';
 
 type MainLayoutProps = {
   collapsed: boolean;
   mainNavigation: NavData[];
 };
 
-export default function MainLayout({
-  collapsed,
-  mainNavigation,
-}: MainLayoutProps) {
+export default function MainLayout({ collapsed, mainNavigation }: MainLayoutProps) {
   const [isCollapsed, setIsCollapsed] = React.useState(collapsed);
 
   const collapseHandler = () => {
@@ -28,15 +21,15 @@ export default function MainLayout({
       return !p;
     });
   };
+
   return (
     <main className="flex flex-row min-h-screen">
       <div
         className={cn(
-          "bg-[#191A17]",
-          isCollapsed && "w-[60px] transition-all duration-300 ease-in-out",
-          !isCollapsed && "w-[300px] transition-all duration-300 ease-in-out"
-        )}
-      >
+          'bg-[#191A17]',
+          isCollapsed && 'w-[60px] transition-all duration-300 ease-in-out',
+          !isCollapsed && 'w-[300px] transition-all duration-300 ease-in-out',
+        )}>
         <MainDecode isCollapsed={isCollapsed} onClick={collapseHandler} />
         <Separator />
         <div className="p-2">

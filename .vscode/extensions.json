@@ -1,5 +1,3 @@
 {
-    "recommendations": [
-        "wayou.vscode-todo-highlight"
-    ]
+  "recommendations": ["wayou.vscode-todo-highlight"]
 }

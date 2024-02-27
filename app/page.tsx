@@ -1,7 +1,6 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { ArrowRightLeft, BarChart, Filter, Flame, Leaf, PieChart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Sheet,
   SheetContent,
@@ -9,31 +8,20 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
-import {
-  ArrowRightLeft,
-  BarChart,
-  Filter,
-  Flame,
-  Leaf,
-  PieChart,
-} from "lucide-react";
-import Link from "next/link";
-import { serverClient } from "./_trpc/serverClient";
+} from '@/components/ui/sheet';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
+import { serverClient } from './_trpc/serverClient';
 
 export default async function Home() {
   const test = await serverClient.discovery();
 
-  console.log(">>>>>", test[0]);
+  console.log('>>>>>', test);
 
   return (
     <div className="flex w-full flex-col gap-4">
       <Card>
-        <div className="p-4">
-          Smog Token Next 100x SOL Meme Coin? Claim the FREE Airdrop!
-        </div>
+        <div className="p-4">Smog Token Next 100x SOL Meme Coin? Claim the FREE Airdrop!</div>
       </Card>
       <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
         <Card>
@@ -48,9 +36,7 @@ export default async function Home() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              24 hour volume
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">24 hour volume</CardTitle>
             <PieChart />
           </CardHeader>
           <CardContent>
@@ -60,9 +46,7 @@ export default async function Home() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              24h Transaction
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">24h Transaction</CardTitle>
             <ArrowRightLeft />
           </CardHeader>
           <CardContent>
@@ -81,7 +65,7 @@ export default async function Home() {
             <TabsTrigger value="notifications">24H</TabsTrigger>
           </TabsList>
         </Tabs>
-        <nav className={cn("flex items-center space-x-2")}>
+        <nav className={cn('flex items-center space-x-2')}>
           <Button>
             <BarChart className="mr-2 h-4 w-4" />
             Market Cap

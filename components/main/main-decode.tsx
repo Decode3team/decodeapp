@@ -1,19 +1,15 @@
-import "./style.css";
-import Image from "next/image";
-import { Button } from "../ui/button";
-import { ChevronsLeft, ChevronsRight } from "lucide-react";
-import { CSSTransition } from "react-transition-group";
-import { cn } from "@/lib/utils";
-import { useRef } from "react";
-import Link from "next/link";
+import './style.css';
+import { ChevronsLeft, ChevronsRight } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRef } from 'react';
+import { CSSTransition } from 'react-transition-group';
 
-function MainDecode({
-  isCollapsed,
-  onClick,
-}: {
-  isCollapsed: boolean;
-  onClick: () => void;
-}) {
+import { cn } from '@/lib/utils';
+
+import { Button } from '../ui/button';
+
+function MainDecode({ isCollapsed, onClick }: { isCollapsed: boolean; onClick: () => void }) {
   const nodeRef = useRef(null);
   const logoRef = useRef(null);
 
@@ -21,17 +17,15 @@ function MainDecode({
     <div className="flex flex-col items-center p-3 pt-4 gap-2">
       <div
         className={cn(
-          "flex w-full transition-all duration-300 ease-in-out",
-          isCollapsed ? "justify-around" : "justify-between"
-        )}
-      >
+          'flex w-full transition-all duration-300 ease-in-out',
+          isCollapsed ? 'justify-around' : 'justify-between',
+        )}>
         <CSSTransition
           in={!isCollapsed}
           timeout={300}
           classNames="node"
           unmountOnExit
-          nodeRef={nodeRef}
-        >
+          nodeRef={nodeRef}>
           <div ref={nodeRef} className="flex items-center">
             <Link href="/">
               <Image src="/decode.png" alt="Decode" width={140} height={26} />
@@ -52,16 +46,10 @@ function MainDecode({
           timeout={300}
           classNames="node"
           unmountOnExit
-          nodeRef={logoRef}
-        >
+          nodeRef={logoRef}>
           <div ref={logoRef}>
             <Link href="/">
-              <Image
-                src="/decode-logo.png"
-                alt="Decode"
-                width={24}
-                height={36}
-              />
+              <Image src="/decode-logo.png" alt="Decode" width={24} height={36} />
             </Link>
           </div>
         </CSSTransition>

@@ -42,27 +42,27 @@ export type RiskyBetTokenParams = BaseDiscoveryApiParams & {
 };
 
 type DiscoveryTokenTrend = {
-  "1h": number;
-  "1d": number;
-  "1w": number;
-  "1M": number;
-}
+  '1h': number;
+  '1d': number;
+  '1w': number;
+  '1M': number;
+};
 
 export type DiscoveryTokenData = {
-    chain_id: string;
-    token_address: string;
-    token_name: string;
-    token_symbol: string;
-    token_logo: string;
-    price_usd: number;
-    security_score: number;
-    market_cap: number;
-    fully_diluted_valuation: number,
-    twitter_followers: number;
-    holders_change: DiscoveryTokenTrend;
-    liquidity_change_usd:DiscoveryTokenTrend;
-    experienced_net_buyers_change: DiscoveryTokenTrend;
-    volume_change_usd: DiscoveryTokenTrend;
-    net_volume_change_usd: DiscoveryTokenTrend;
-    price_percent_change_usd: DiscoveryTokenTrend;
-}
+  chain_id: string;
+  token_address: string;
+  token_name: string;
+  token_symbol: string;
+  token_logo: string;
+  price_usd: number;
+  security_score: number;
+  market_cap: number;
+  fully_diluted_valuation: number;
+  twitter_followers: number;
+  holders_change: DiscoveryTokenTrend;
+  liquidity_change_usd: DiscoveryTokenTrend;
+  experienced_net_buyers_change: DiscoveryTokenTrend;
+  volume_change_usd: DiscoveryTokenTrend;
+  net_volume_change_usd: DiscoveryTokenTrend;
+  price_percent_change_usd: DiscoveryTokenTrend;
+};

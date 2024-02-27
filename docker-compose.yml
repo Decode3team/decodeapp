@@ -9,9 +9,9 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: decode
     ports:
-      - "5432:5432"
+      - '5432:5432'
     networks:
-       - network
+      - network
     volumes:
       - ./.docker_data/postgres:/var/lib/postgresql/data
 
@@ -19,26 +19,26 @@ services:
     container_name: web
     command: npm run dev
     build:
-        context: .
-        dockerfile: ./Dockerfile.web
+      context: .
+      dockerfile: ./Dockerfile.web
     volumes:
       - .:/app
       - /app/node_modules
     depends_on:
       - db
     ports:
-      - "3000:3000" 
+      - '3000:3000'
     networks:
       - network
     environment:
       NODE_ENV: development
-    
+
   redis:
     container_name: redis
-    command: redis-server --protected-mode no 
+    command: redis-server --protected-mode no
     image: redis/redis-stack:latest
     ports:
-      - "6379:6379"
+      - '6379:6379'
     networks:
       - network
     volumes:

@@ -1,9 +1,6 @@
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { LucideIcon, SheetIcon } from "lucide-react";
-import { CSSTransition } from "react-transition-group";
-import { useRef } from "react";
+import Link from 'next/link';
+import { useRef } from 'react';
+import { cn } from '@/lib/utils';
 
 export type NavData = {
   name: string;
@@ -18,19 +15,17 @@ function MainNav({ collapsed, data }: { collapsed: boolean; data: NavData }) {
     <Link
       href={data.href}
       className={cn(
-        "flex w-full rounded-sm dark:hover:bg-stone-700 dark:text-white cursor-pointer flex-nowrap p-2 transition-colors duration-200 ease-in-out",
-        collapsed ? "justify-center" : "items-center"
-      )}
-    >
-      <div className="flex flex-shrink-0">{data.icon || null}</div>
+        'flex w-full rounded-sm dark:hover:bg-stone-700 dark:text-white cursor-pointer flex-nowrap p-2 transition-colors duration-200 ease-in-out',
+        collapsed ? 'justify-center' : 'items-center',
+      )}>
+      <div className="flex flex-shrink-0">{data.icon ?? null}</div>
       <div
         ref={nodeRef}
         className={cn(
-          "whitespace-nowrap flex flex-shrink-0",
-          collapsed ? "hidden" : "",
-          data.icon ? "pl-3" : ""
-        )}
-      >
+          'whitespace-nowrap flex flex-shrink-0',
+          collapsed ? 'hidden' : '',
+          data.icon ? 'pl-3' : '',
+        )}>
         {data.name}
       </div>
     </Link>
