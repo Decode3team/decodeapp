@@ -30,8 +30,8 @@ import { DefinedApiTimeResolution, DefinedTopTokenModel } from '@/lib/defined/ty
 import { trpc } from '../_trpc/client';
 import { Skeleton } from '@/components/ui/skeleton';
 import LiveNumber from '@/components/live-number';
-import TableData from './table-data';
-import { columns } from './table-column';
+// import TableData from './table-data';
+// import { columns } from './table-column';
 // import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 const format = (num: number, format = '0.0.00a') => {
