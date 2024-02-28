@@ -1,3 +1,5 @@
+import { ApiTimeResolutionValue } from '../constants';
+
 export type DefinedApiResponse<T> = {
   data: {
     [key: string]: T;
@@ -31,4 +33,5 @@ export type DefinedTopTokenModel = {
   marketCap: string;
 };
 
-export type DefinedApiTimeResolution = '1' | '5' | '15' | '30' | '60' | '240' | '720' | '1D';
+export type DefinedApiTimeResolution =
+  (typeof ApiTimeResolutionValue)[keyof typeof ApiTimeResolutionValue];

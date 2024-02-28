@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 import { ThemeProvider } from '@/components/theme-provider';
 import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
-import TRPCProvider from './_trpc/TRPCProvider';
+import TRPCProvider from './_trpc/trpc-provider';
 import MainSidebar from '@/components/main/main-sidebar';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -56,7 +56,7 @@ export default function RootLayout({
   ];
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={cn(inter.className, 'dark:bg-stone-950')} suppressHydrationWarning>
         <TRPCProvider>
           <ThemeProvider

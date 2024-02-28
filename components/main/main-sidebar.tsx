@@ -1,19 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-
 import { cn } from '@/lib/utils';
-
+import { Separator } from '../ui/separator';
 import MainDecode from './main-decode';
 import MainNav, { NavData } from './main-nav';
-import { Separator } from '../ui/separator';
 
 type MainSidebarProps = {
   collapsed: boolean;
   mainNavigation: NavData[];
 };
 
-function MainSidebar({ collapsed = false, mainNavigation }: MainSidebarProps) {
+function MainSidebar({ collapsed = false, mainNavigation }: Readonly<MainSidebarProps>) {
   const [isCollapsed, setIsCollapsed] = useState(collapsed);
   const collapseHandler = () => {
     setIsCollapsed((p) => {
@@ -34,8 +32,8 @@ function MainSidebar({ collapsed = false, mainNavigation }: MainSidebarProps) {
       <Separator />
       <div className="p-2">
         <div>
-          {mainNavigation.map((nav, i) => (
-            <MainNav key={i} data={nav} collapsed={isCollapsed} />
+          {mainNavigation.map((nav) => (
+            <MainNav key={nav.name} data={nav} collapsed={isCollapsed} />
           ))}
         </div>
         <Separator />

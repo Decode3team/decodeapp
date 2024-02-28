@@ -13,6 +13,12 @@ export class DefinedApiNetworkClient {
 
   async getNetworks() {
     const queryName = 'getNetworks';
+    const redisClient = new RedisClient();
+    const existingData = await redisClient.get(CacheKeys.NETWORK_DATA);
+
+    if (existingData) {
+      return JSON.parse(existingData) as DefinedNetworkModel[];
+    }
 
     return this.client
       .query<DefinedNetworkModel[]>(
@@ -25,13 +31,6 @@ export class DefinedApiNetworkClient {
           }`,
       )
       .then(async (res) => {
-        const redisClient = new RedisClient();
-        const existingData = await redisClient.get(CacheKeys.NETWORK_DATA);
-
-        if (existingData) {
-          return JSON.parse(existingData) as DefinedNetworkModel[];
-        }
-
         const dataProvider = new BlockchainDataProvider();
         const availableBlockChains = dataProvider.getData();
         const data = res.filter((d) => availableBlockChains.indexOf(d.name) !== -1);

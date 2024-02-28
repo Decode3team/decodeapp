@@ -17,6 +17,11 @@ export class DefinedApiTokenClient {
     const networkClient = new DefinedApiNetworkClient(this.client);
     const networks = await networkClient.getNetworks();
     const queryName = 'listTopTokens';
+    const existingData = await this.redisClient.get(CacheKeys.TOP_TOKEN[resolution]);
+
+    if (existingData?.length && existingData.length > 0) {
+      return JSON.parse(existingData) as DefinedTopTokenModel[];
+    }
 
     return this.client
       .query<DefinedTopTokenModel[]>(
@@ -24,6 +29,7 @@ export class DefinedApiTokenClient {
         `
             query {
                 ${queryName}(
+                    limit: 50
                     networkFilter: [${networks.map((n) => n.id).join(',')}]
                     resolution: "${resolution}"
                 ) {
@@ -49,21 +55,25 @@ export class DefinedApiTokenClient {
                 }
             }`,
       )
-
       .then(async (res) => {
-        const existingData = await this.redisClient.get(CacheKeys.TOP_TOKEN[resolution]);
+        const uniqueItems = res.reduce((acc, currentItem) => {
+          if (!acc.has(currentItem.address)) {
+            acc.set(currentItem.address, currentItem);
+          }
 
-        if (existingData) {
-          return JSON.parse(existingData) as DefinedTopTokenModel[];
-        }
+          return acc;
+        }, new Map());
+
+        // Convert the Map values back to an array
+        const filteredRes = Array.from(uniqueItems.values());
 
         await this.redisClient.set(
           CacheKeys.TOP_TOKEN[resolution],
-          JSON.stringify(res),
+          JSON.stringify(filteredRes),
           TimeResolution[resolution],
         );
 
-        return res;
+        return filteredRes;
       });
   }
 }

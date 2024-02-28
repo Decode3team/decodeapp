@@ -1,12 +1,9 @@
-//import { z } from 'zod';
+import { z } from 'zod';
 import { publicProcedure, router } from './trpc';
-import { RedisClient } from '@/lib/redis/client';
-import { TokenData } from './models/TokenData';
-import { formatNumber } from '@/lib/utils';
 import { DefinedApiClient } from '@/lib/defined/client';
-import { DefinedApiNetworkClient } from '@/lib/defined/network';
-import { DefinedNetworkModel } from '@/lib/defined/types';
 import { DefinedApiTokenClient } from '@/lib/defined/token';
+import { DefinedApiTimeResolution } from '@/lib/defined/types';
+import { ResolutionSchema } from '@/lib/zod-schema';
 
 export const appRouter = router({
   // hello: publicProcedure
@@ -21,16 +18,18 @@ export const appRouter = router({
 
   // TODO: CLEAN UP DUTY
   // TODO: SAVE TO DB
-  ['top-tokens']: publicProcedure
-    // .input(
-    //   z.object({
-    //     resolution: z.string(),
-    //   })
-    // )
-    .query(async () => {
+  'top-tokens': publicProcedure
+    .input(
+      z.object({
+        resolution: ResolutionSchema,
+      }),
+    )
+    .query(async ({ input }) => {
       const client = new DefinedApiClient();
       const tokenClient = new DefinedApiTokenClient(client);
-      return tokenClient.getTopTokens();
+      const res: DefinedApiTimeResolution = input.resolution || '60';
+
+      return tokenClient.getTopTokens(res);
     }),
 });
 
