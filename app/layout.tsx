@@ -64,9 +64,11 @@ export default function RootLayout({
             defaultTheme="dark"
             enableSystem
             disableTransitionOnChange>
-            <main className="flex flex-row min-h-screen">
+            <main className="flex flex-row min-h-screen relative">
               <MainSidebar collapsed={defaultCollapsed} mainNavigation={mainNav} />
-              <div className="flex grow min-h-screen p-4 justify-center">{children}</div>
+              <div className="flex grow min-h-screen p-4 max-w-full overflow-x-clip justify-center">
+                {children}
+              </div>
             </main>
           </ThemeProvider>
         </TRPCProvider>
