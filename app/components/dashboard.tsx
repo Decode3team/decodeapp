@@ -30,7 +30,9 @@ import { DefinedApiTimeResolution, DefinedTopTokenModel } from '@/lib/defined/ty
 import { trpc } from '../_trpc/client';
 import { Skeleton } from '@/components/ui/skeleton';
 import LiveNumber from '@/components/live-number';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import TableData from './table-data';
+import { columns } from './table-column';
+// import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 const format = (num: number, format = '0.0.00a') => {
   const threshold = 1e-6;
@@ -49,7 +51,6 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
       initialData,
     },
   );
-
   const { marketCap, volume, transaction } = data.reduce(
     (acc, token) => {
       return {
@@ -157,6 +158,8 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
           </Sheet>
         </nav>
       </div>
+
+      {/* <TableData columns={columns} data={data} /> */}
 
       {/* <ScrollArea className="overflow-x-auto whitespace-nowrap"> */}
       <div className="flex w-full rounded-md border overflow-x-auto">
