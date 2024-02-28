@@ -6,35 +6,23 @@ export class RedisClient {
   constructor() {
     this.client = new Redis({
       host: process.env.REDIS_ENDPOINT ?? 'redis',
-      port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6379,
+      port: process.env.REDIS_PORT ? Number(process.env.REDIS_PORT) : 6379,
     });
   }
 
-  async set(key: string, value: any, expirationInSeconds?: number) {
-    try {
-      const args: [string, any] = [key, value];
+  async set(key: string, value: string, expirationInSeconds?: number) {
+    const args: [string, string | number] = [key, value];
 
-      if (expirationInSeconds) {
-        args.push(...['EX', expirationInSeconds]);
-      }
-
-      await this.client.set(...args);
-      console.log(`Key "${key}" set with value "${value}"`);
-    } catch (error) {
-      console.error('Error setting key:', error);
+    if (expirationInSeconds) {
+      args.push(...['EX', expirationInSeconds]);
     }
+
+    await this.client.set(...args);
   }
 
   async get(key: string) {
-    try {
-      const result = await this.client.get(key);
-
-      console.log(`Value of key "${key}":`, result);
-
-      return result;
-    } catch (error) {
-      console.error('Error getting key:', error);
-    }
+    const result = await this.client.get(key);
+    return result;
   }
 
   quit() {
