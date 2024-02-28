@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { Separator } from '../ui/separator';
 import MainDecode from './main-decode';
 import MainNav, { NavData } from './main-nav';
+import { ScrollArea } from '../ui/scroll-area';
 
 type MainSidebarProps = {
   collapsed: boolean;
@@ -24,20 +25,22 @@ function MainSidebar({ collapsed = false, mainNavigation }: Readonly<MainSidebar
   return (
     <div
       className={cn(
-        'dark:bg-[#191A17] bg-[#f1f1f1] ',
+        'dark:bg-[#191A17] bg-[#f1f1f1] max-h-svh sticky top-0 overflow-clip',
         isCollapsed && 'w-[60px] min-w-[60px] transition-all duration-300 ease-in-out',
         !isCollapsed && 'w-[250px] min-w-[250px] transition-all duration-300 ease-in-out',
       )}>
       <MainDecode isCollapsed={isCollapsed} onClick={collapseHandler} />
       <Separator />
-      <div className="p-2">
-        <div>
-          {mainNavigation.map((nav) => (
-            <MainNav key={nav.name} data={nav} collapsed={isCollapsed} />
-          ))}
+      <ScrollArea className="h-full">
+        <div className="p-2 pb-40">
+          <div>
+            {mainNavigation.map((nav) => (
+              <MainNav key={nav.name} data={nav} collapsed={isCollapsed} />
+            ))}
+          </div>
+          <Separator />
         </div>
-        <Separator />
-      </div>
+      </ScrollArea>
     </div>
   );
 }

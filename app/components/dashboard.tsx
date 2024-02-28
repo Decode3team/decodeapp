@@ -29,6 +29,8 @@ import { useState } from 'react';
 import { DefinedApiTimeResolution, DefinedTopTokenModel } from '@/lib/defined/types';
 import { trpc } from '../_trpc/client';
 import { Skeleton } from '@/components/ui/skeleton';
+import LiveNumber from '@/components/live-number';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 const format = (num: number, format = '0.0.00a') => {
   const threshold = 1e-6;
@@ -61,7 +63,7 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
 
   return (
     <div className="flex w-full flex-col">
-      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Market Cap</CardTitle>
@@ -71,7 +73,7 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
             {isFetching ? (
               <Skeleton className="w-[150px] h-[32px] rounded-md" />
             ) : (
-              <div className="text-2xl font-bold">${format(marketCap)}</div>
+              <LiveNumber className="text-2xl font-bold" num={marketCap} />
             )}
 
             {/* <Badge className="bg-red-600 hover:bg-red-600">-0.34%</Badge> */}
@@ -86,7 +88,7 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
             {isFetching ? (
               <Skeleton className="w-[150px] h-[32px] rounded-md" />
             ) : (
-              <div className="text-2xl font-bold">${format(volume)}</div>
+              <LiveNumber className="text-2xl font-bold" num={volume} />
             )}
 
             {/* <Badge className="bg-green-600 hover:bg-green-600">+1.07%</Badge> */}
@@ -101,7 +103,7 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
             {isFetching ? (
               <Skeleton className="w-[150px] h-[32px] rounded-md" />
             ) : (
-              <div className="text-2xl font-bold">${format(transaction)}</div>
+              <LiveNumber className="text-2xl font-bold" num={transaction} />
             )}
 
             {/* <Badge className="bg-green-600 hover:bg-green-600">+0.22%</Badge> */}
@@ -156,12 +158,13 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
         </nav>
       </div>
 
-      <div className="rounded-md border">
+      {/* <ScrollArea className="overflow-x-auto whitespace-nowrap"> */}
+      <div className="flex w-full rounded-md border overflow-x-auto">
         <TooltipProvider>
-          <Table>
-            <TableHeader>
+          <Table className="rounded-md border-border w-full table-auto">
+            <TableHeader className="dark:bg-stone-950 z-50">
               <TableRow>
-                <TableHead>Token</TableHead>
+                <TableHead className="sticky left-0 dark:bg-stone-950">Token</TableHead>
                 <TableHead>Price</TableHead>
                 <TableHead className="text-center">
                   <Tooltip>
@@ -258,7 +261,7 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
             <TableBody>
               {data.map((token) => (
                 <TableRow key={token.address + token.name}>
-                  <TableCell>
+                  <TableCell className="sticky left-0 dark:bg-stone-950">
                     <div className="flex items-center gap-2">
                       <Avatar className="w-[32px] h-[32px]">
                         <AvatarImage
@@ -268,19 +271,38 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
                         <AvatarFallback>{token.name.slice(0, 2).toUpperCase()}</AvatarFallback>
                       </Avatar>
                       {token.name}
-                      <Badge variant="outline">{token.symbol}</Badge>
+                      <Badge variant="secondary">{token.symbol}</Badge>
                     </div>
                   </TableCell>
                   <TableCell>${format(token.price, '0,0.00000a')}</TableCell>
-                  <TableCell className="text-center">{format(token.txnCount1, '0,0')}</TableCell>
-                  <TableCell className="text-center">{format(token.txnCount4, '0,0')}</TableCell>
-                  <TableCell className="text-center">{format(token.txnCount12, '0,0')}</TableCell>
-                  <TableCell className="text-center">{format(token.txnCount24, '0,0')}</TableCell>
+
+                  <TableCell className="text-center">
+                    <LiveNumber num={token.txnCount1} format="0,0" />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <LiveNumber num={token.txnCount4} format="0,0" />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <LiveNumber num={token.txnCount12} format="0,0" />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <LiveNumber num={token.txnCount24} format="0,0" />
+                  </TableCell>
+
                   <TableCell>{format(parseFloat(token.volume))}</TableCell>
-                  <TableCell className="text-center">{format(token.priceChange1)}</TableCell>
-                  <TableCell className="text-center">{format(token.priceChange4)}</TableCell>
-                  <TableCell className="text-center">{format(token.priceChange12)}</TableCell>
-                  <TableCell className="text-center">{format(token.priceChange24)}</TableCell>
+
+                  <TableCell className="text-center">
+                    <LiveNumber num={token.priceChange1} format="0,0.00000a" live sign />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <LiveNumber num={token.priceChange4} format="0,0.00000a" live sign />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <LiveNumber num={token.priceChange12} format="0,0.00000a" live sign />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <LiveNumber num={token.priceChange24} format="0,0.00000a" live sign />
+                  </TableCell>
                   <TableCell>{format(parseFloat(token.liquidity))}</TableCell>
                 </TableRow>
               ))}
@@ -288,6 +310,8 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
           </Table>
         </TooltipProvider>
       </div>
+      {/* <ScrollBar orientation="horizontal" />
+      </ScrollArea> */}
     </div>
   );
 }
