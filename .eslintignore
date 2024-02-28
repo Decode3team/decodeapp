@@ -1,17 +1,3 @@
 node_modules/*
 public/*
 .vscode/*
-
-# files
-.eslintrc.json
-Decode.code-workspace
-Dockerfile.web
-README.md
-favicon.ico
-components.json
-docker-compose.yml
-package-lock.json
-package.json
-tsconfig.json
-
-**/*.css

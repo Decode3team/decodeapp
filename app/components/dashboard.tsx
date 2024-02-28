@@ -3,7 +3,6 @@
 import { ArrowRightLeft, BarChart, Filter, Flame, Leaf, PieChart, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useQueryClient } from '@tanstack/react-query';
 import {
   Sheet,
   SheetContent,
@@ -26,9 +25,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { DefinedApiTimeResolution, DefinedTopTokenModel } from '@/lib/defined/types';
 import { trpc } from '../_trpc/client';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const format = (num: number, format = '0.0.00a') => {
   const threshold = 1e-6;
@@ -39,14 +39,11 @@ const format = (num: number, format = '0.0.00a') => {
 
 function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel[] }>) {
   const [resolution, setResolution] = useState<DefinedApiTimeResolution>('1D');
-  const utils = trpc.useUtils();
-  const { data } = trpc['top-tokens'].useQuery(
+  const { data, isFetching } = trpc['top-tokens'].useQuery(
     {
       resolution,
     },
     {
-      // suspense: true,
-      // enabled: false,
       initialData,
     },
   );
@@ -62,17 +59,8 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
     { marketCap: 0, volume: 0, transaction: 0 },
   );
 
-  // useEffect(() => {
-  //   if (resolution) {
-  //     fetchData();
-  //   }
-  // }, [resolution]);
-
   return (
-    <div className="flex w-full flex-col gap-4">
-      <Card>
-        <div className="p-4">Smog Token Next 100x SOL Meme Coin? Claim the FREE Airdrop!</div>
-      </Card>
+    <div className="flex w-full flex-col">
       <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -80,7 +68,12 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
             <BarChart />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${format(marketCap)}</div>
+            {isFetching ? (
+              <Skeleton className="w-[150px] h-[32px] rounded-md" />
+            ) : (
+              <div className="text-2xl font-bold">${format(marketCap)}</div>
+            )}
+
             {/* <Badge className="bg-red-600 hover:bg-red-600">-0.34%</Badge> */}
           </CardContent>
         </Card>
@@ -90,7 +83,12 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
             <PieChart />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${format(volume)}</div>
+            {isFetching ? (
+              <Skeleton className="w-[150px] h-[32px] rounded-md" />
+            ) : (
+              <div className="text-2xl font-bold">${format(volume)}</div>
+            )}
+
             {/* <Badge className="bg-green-600 hover:bg-green-600">+1.07%</Badge> */}
           </CardContent>
         </Card>
@@ -100,13 +98,18 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
             <ArrowRightLeft />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${format(transaction)}</div>
+            {isFetching ? (
+              <Skeleton className="w-[150px] h-[32px] rounded-md" />
+            ) : (
+              <div className="text-2xl font-bold">${format(transaction)}</div>
+            )}
+
             {/* <Badge className="bg-green-600 hover:bg-green-600">+0.22%</Badge> */}
           </CardContent>
         </Card>
       </div>
 
-      <div className="flex flex-wrap max-w-screen-lg">
+      <div className="sticky top-0 py-4 flex flex-wrap w-full dark:bg-stone-950 z-50">
         <Tabs defaultValue={resolution} className="space-y-4 mr-2">
           <TabsList>
             <TabsTrigger value="5" onClick={() => setResolution('60')}>
@@ -255,8 +258,6 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
             <TableBody>
               {data.map((token) => (
                 <TableRow key={token.address + token.name}>
-                  {token.address === '0x3419875b4d3bca7f3fdda2db7a476a79fd31b4feDizzyHavoc' &&
-                    console.log(token.name)}
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Avatar className="w-[32px] h-[32px]">
