@@ -30,8 +30,8 @@ import { DefinedApiTimeResolution, DefinedTopTokenModel } from '@/lib/defined/ty
 import { trpc } from '../_trpc/client';
 import { Skeleton } from '@/components/ui/skeleton';
 import LiveNumber from '@/components/live-number';
-import TableData from './table-data';
-import { columns } from './table-column';
+// import TableData from './table-data';
+// import { columns } from './table-column';
 // import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 const format = (num: number, format = '0.0.00a') => {
@@ -112,8 +112,8 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
         </Card>
       </div>
 
-      <div className="sticky top-0 py-4 flex flex-wrap w-full dark:bg-stone-950 z-50">
-        <Tabs defaultValue={resolution} className="space-y-4 mr-2">
+      <div className="sticky top-0 py-4 flex flex-wrap w-full dark:bg-stone-950 z-50 gap-2">
+        <Tabs defaultValue={resolution} className="space-y-4">
           <TabsList>
             <TabsTrigger value="5" onClick={() => setResolution('60')}>
               1H
@@ -167,7 +167,7 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
           <Table className="rounded-md border-border w-full table-auto">
             <TableHeader className="dark:bg-stone-950 z-50">
               <TableRow>
-                <TableHead className="sticky left-0 dark:bg-stone-950">Token</TableHead>
+                <TableHead className="md:sticky md:left-0 dark:bg-stone-950">Token</TableHead>
                 <TableHead>Price</TableHead>
                 <TableHead className="text-center">
                   <Tooltip>
