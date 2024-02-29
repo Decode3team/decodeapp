@@ -4,6 +4,7 @@ import { DefinedApiClient } from '@/lib/defined/client';
 import { DefinedApiTokenClient } from '@/lib/defined/token';
 import { DefinedApiTimeResolution } from '@/lib/defined/types';
 import { ResolutionSchema } from '@/lib/zod-schema';
+import { DefinedApiNetworkClient } from '@/lib/defined/network';
 
 export const appRouter = router({
   // hello: publicProcedure
@@ -31,6 +32,16 @@ export const appRouter = router({
 
       return tokenClient.getTopTokens(res);
     }),
+  'decode-networks': publicProcedure.query(async () => {
+    const client = new DefinedApiClient();
+    const networkClient = new DefinedApiNetworkClient(client);
+
+    const data = await networkClient.getNetworks();
+
+    console.log('>>', data);
+
+    return data;
+  }),
 });
 
 export type AppRouter = typeof appRouter;

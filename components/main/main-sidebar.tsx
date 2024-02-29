@@ -6,6 +6,7 @@ import { Separator } from '../ui/separator';
 import MainDecode from './main-decode';
 import MainNav, { NavData } from './main-nav';
 import { ScrollArea } from '../ui/scroll-area';
+import { trpc } from '@/app/_trpc/client';
 
 type MainSidebarProps = {
   collapsed: boolean;
@@ -21,6 +22,10 @@ function MainSidebar({ collapsed = false, mainNavigation }: Readonly<MainSidebar
       return !p;
     });
   };
+
+  const { data } = trpc['decode-networks'].useQuery();
+
+  console.log('>>>', data);
 
   return (
     <div

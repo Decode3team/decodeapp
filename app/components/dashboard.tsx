@@ -28,7 +28,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useState } from 'react';
 import { DefinedApiTimeResolution, DefinedTopTokenModel } from '@/lib/defined/types';
 import { trpc } from '../_trpc/client';
-import { Skeleton } from '@/components/ui/skeleton';
 import LiveNumber from '@/components/live-number';
 // import TableData from './table-data';
 // import { columns } from './table-column';
@@ -43,7 +42,7 @@ const format = (num: number, format = '0.0.00a') => {
 
 function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel[] }>) {
   const [resolution, setResolution] = useState<DefinedApiTimeResolution>('1D');
-  const { data, isFetching } = trpc['top-tokens'].useQuery(
+  const { data } = trpc['top-tokens'].useQuery(
     {
       resolution,
     },
@@ -71,11 +70,7 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
             <BarChart />
           </CardHeader>
           <CardContent>
-            {isFetching ? (
-              <Skeleton className="w-[150px] h-[32px] rounded-md" />
-            ) : (
-              <LiveNumber className="text-2xl font-bold" num={marketCap} />
-            )}
+            <LiveNumber className="text-2xl font-bold" num={marketCap} />
 
             {/* <Badge className="bg-red-600 hover:bg-red-600">-0.34%</Badge> */}
           </CardContent>
@@ -86,11 +81,7 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
             <PieChart />
           </CardHeader>
           <CardContent>
-            {isFetching ? (
-              <Skeleton className="w-[150px] h-[32px] rounded-md" />
-            ) : (
-              <LiveNumber className="text-2xl font-bold" num={volume} />
-            )}
+            <LiveNumber className="text-2xl font-bold" num={volume} />
 
             {/* <Badge className="bg-green-600 hover:bg-green-600">+1.07%</Badge> */}
           </CardContent>
@@ -101,11 +92,7 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
             <ArrowRightLeft />
           </CardHeader>
           <CardContent>
-            {isFetching ? (
-              <Skeleton className="w-[150px] h-[32px] rounded-md" />
-            ) : (
-              <LiveNumber className="text-2xl font-bold" num={transaction} />
-            )}
+            <LiveNumber className="text-2xl font-bold" num={transaction} />
 
             {/* <Badge className="bg-green-600 hover:bg-green-600">+0.22%</Badge> */}
           </CardContent>
@@ -277,7 +264,7 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
                       <Badge variant="secondary">{token.symbol}</Badge>
                     </div>
                   </TableCell>
-                  <TableCell>${format(token.price, '0,0.00000a')}</TableCell>
+                  <TableCell>${format(token.price, '0,0.000000a')}</TableCell>
 
                   <TableCell className="text-center">
                     <LiveNumber num={token.txnCount1} format="0,0" />
@@ -295,16 +282,16 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
                   <TableCell>{format(parseFloat(token.volume))}</TableCell>
 
                   <TableCell className="text-center">
-                    <LiveNumber num={token.priceChange1} format="0,0.00000a" live sign />
+                    <LiveNumber num={token.priceChange1} format="0,0.000000a" live sign />
                   </TableCell>
                   <TableCell className="text-center">
-                    <LiveNumber num={token.priceChange4} format="0,0.00000a" live sign />
+                    <LiveNumber num={token.priceChange4} format="0,0.000000a" live sign />
                   </TableCell>
                   <TableCell className="text-center">
-                    <LiveNumber num={token.priceChange12} format="0,0.00000a" live sign />
+                    <LiveNumber num={token.priceChange12} format="0,0.000000a" live sign />
                   </TableCell>
                   <TableCell className="text-center">
-                    <LiveNumber num={token.priceChange24} format="0,0.00000a" live sign />
+                    <LiveNumber num={token.priceChange24} format="0,0.000000a" live sign />
                   </TableCell>
                   <TableCell>{format(parseFloat(token.liquidity))}</TableCell>
                 </TableRow>
