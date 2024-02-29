@@ -3,7 +3,7 @@ version: '3.9'
 services:
   db:
     container_name: db
-    image: postgres:16
+    image: postgres:16.2-alpine3.19
     environment:
       POSTGRES_USER: database
       POSTGRES_PASSWORD: password

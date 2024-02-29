@@ -26,14 +26,14 @@ export const appRouter = router({
       }),
     )
     .query(async ({ input }) => {
-      const client = new DefinedApiClient();
+      const client = DefinedApiClient.getInstance();
       const tokenClient = new DefinedApiTokenClient(client);
       const res: DefinedApiTimeResolution = input.resolution || '60';
 
-      return tokenClient.getTopTokens(res);
+      return await tokenClient.getTopTokens(res);
     }),
   'decode-networks': publicProcedure.query(async () => {
-    const client = new DefinedApiClient();
+    const client = DefinedApiClient.getInstance();
     const networkClient = new DefinedApiNetworkClient(client);
 
     const data = await networkClient.getNetworks();

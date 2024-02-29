@@ -13,7 +13,7 @@ export class DefinedApiNetworkClient {
 
   async getNetworks() {
     const queryName = 'getNetworks';
-    const redisClient = new RedisClient();
+    const redisClient = RedisClient.getInstance();
     const existingData = await redisClient.get(CacheKeys.NETWORK_DATA);
 
     if (existingData) {

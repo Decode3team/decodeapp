@@ -10,7 +10,7 @@
     "lint": "npx eslint '**/*.{js,jsx,ts,tsx}' --fix",
     "prettier": "npx prettier '**/*.{js,jsx,ts,tsx,html,css,json,md}' --write",
     "lint:prettier": "npm run lint && npm run prettier",
-    "docker:rebuild": "docker compose stop && docker compose rm web -f && docker rmi decode-web -f && docker volume prune -a -f && docker compose up --build"
+    "docker:rebuild": "docker compose stop && docker compose rm web -f && docker rmi decode-web -f && docker compose rm -v -f && docker compose up --build"
   },
   "dependencies": {
     "@moralisweb3/next": "^2.25.0",

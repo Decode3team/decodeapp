@@ -10,18 +10,19 @@ export class DefinedApiTokenClient {
 
   constructor(client: DefinedApiClient) {
     this.client = client;
-    this.redisClient = new RedisClient();
+    this.redisClient = RedisClient.getInstance();
   }
 
   async getTopTokens(resolution: DefinedApiTimeResolution = '60') {
-    const networkClient = new DefinedApiNetworkClient(this.client);
-    const networks = await networkClient.getNetworks();
-    const queryName = 'listTopTokens';
     const existingData = await this.redisClient.get(CacheKeys.TOP_TOKEN[resolution]);
 
     if (existingData?.length && existingData.length > 0) {
       return JSON.parse(existingData) as DefinedTopTokenModel[];
     }
+
+    const queryName = 'listTopTokens';
+    const networkClient = new DefinedApiNetworkClient(this.client);
+    const networks = await networkClient.getNetworks();
 
     return this.client
       .query<DefinedTopTokenModel[]>(
@@ -70,7 +71,7 @@ export class DefinedApiTokenClient {
         await this.redisClient.set(
           CacheKeys.TOP_TOKEN[resolution],
           JSON.stringify(filteredRes),
-          TimeResolution[resolution],
+          TimeResolution[5],
         );
 
         return filteredRes;
