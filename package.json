@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "start:azure": "./node_modules/next/dist/bin/next start",
+    "start:azure": "next start -p 80",
     "lint": "npx eslint '**/*.{js,jsx,ts,tsx}' --fix",
     "prettier": "npx prettier '**/*.{js,jsx,ts,tsx,html,css,json,md}' --write",
     "lint:prettier": "npm run lint && npm run prettier",
