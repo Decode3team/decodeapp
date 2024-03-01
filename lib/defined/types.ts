@@ -9,6 +9,7 @@ export type DefinedApiResponse<T> = {
 export type DefinedNetworkModel = {
   id: number;
   name: string;
+  logo: string;
 };
 
 export type DefinedTopTokenModel = {

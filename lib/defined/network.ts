@@ -33,9 +33,18 @@ export class DefinedApiNetworkClient {
       .then(async (res) => {
         const dataProvider = new BlockchainDataProvider();
         const availableBlockChains = dataProvider.getData();
-        const data = res.filter((d) => availableBlockChains.indexOf(d.name) !== -1);
+        const data = res
+          .filter((d) => availableBlockChains.indexOf(d.name) !== -1)
+          .map((d) => {
+            return {
+              ...d,
+              ...{
+                logo: `/logos/networks/${d.name}.png`,
+              },
+            };
+          });
 
-        await redisClient.set(CacheKeys.NETWORK_DATA, JSON.stringify(data), TimeResolution[60]);
+        await redisClient.set(CacheKeys.NETWORK_DATA, JSON.stringify(data), TimeResolution['1D']);
 
         return data;
       });
