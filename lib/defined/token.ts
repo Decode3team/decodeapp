@@ -1,4 +1,4 @@
-import { DefinedApiClient } from './client';
+import { DefinedApiClient, GqlTag } from './client';
 import { RedisClient } from '@/lib/redis/client';
 import { DefinedApiNetworkClient } from './network';
 import { CacheKeys, TimeResolution } from '../constants';
@@ -26,42 +26,40 @@ export class DefinedApiTokenClient {
     const networks = await networkClient.getNetworks();
     const networkFilter = networks
       .filter((n) => (networkId ? n.id === networkId : true))
-      .map((n) => n.id)
-      .join(',');
-
-    console.log(networks);
+      .map((n) => n.id);
 
     return this.client
       .query<DefinedTopTokenModel[]>(
         queryName,
-        `
-            query {
-                ${queryName}(
-                    limit: 50
-                    networkFilter: [${networkFilter}]
-                    resolution: "${resolution}"
-                ) {
-                    name
-                    symbol
-                    address
-                    imageSmallUrl
-                    imageThumbUrl
-                    imageLargeUrl
-                    volume
-                    liquidity
-                    price
-                    priceChange
-                    priceChange1
-                    priceChange4
-                    priceChange12
-                    priceChange24
-                    txnCount1
-                    txnCount4
-                    txnCount12
-                    txnCount24
-                    marketCap
-                }
-            }`,
+        GqlTag`
+          query ($networkFilter: [Int!], $limit: Int, $resolution: String) {
+            ${queryName}(networkFilter: $networkFilter, limit: $limit, resolution: $resolution) {
+              name
+              symbol
+              address
+              imageSmallUrl
+              imageThumbUrl
+              imageLargeUrl
+              volume
+              liquidity
+              price
+              priceChange
+              priceChange1
+              priceChange4
+              priceChange12
+              priceChange24
+              txnCount1
+              txnCount4
+              txnCount12
+              txnCount24
+              marketCap
+            }
+          }`,
+        {
+          networkFilter,
+          limit: 50,
+          resolution,
+        },
       )
       .then(async (res) => {
         const uniqueItems = res.reduce((acc, currentItem) => {

@@ -1,9 +1,7 @@
 import { ApiTimeResolutionValue } from '../constants';
 
 export type DefinedApiResponse<T> = {
-  data: {
-    [key: string]: T;
-  };
+  [key: string]: T;
 };
 
 export type DefinedNetworkModel = {

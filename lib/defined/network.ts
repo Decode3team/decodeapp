@@ -1,6 +1,6 @@
 import { CacheKeys, NetworkNames, TimeResolution } from '../constants';
 import { BlockchainDataProvider } from '../providers/blockchain-data-provider';
-import { DefinedApiClient } from './client';
+import { DefinedApiClient, GqlTag } from './client';
 import { DefinedNetworkModel } from './types';
 import { RedisClient } from '@/lib/redis/client';
 
@@ -23,7 +23,7 @@ export class DefinedApiNetworkClient {
     return this.client
       .query<DefinedNetworkModel[]>(
         queryName,
-        `{
+        GqlTag`{
             ${queryName} {
               name
               id
