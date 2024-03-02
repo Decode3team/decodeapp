@@ -13,16 +13,17 @@ import {
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
-import { DefinedApiTimeResolution, DefinedTopTokenModel } from '@/lib/defined/types';
-// import { useRouter } from 'next/navigation';
+import { DefinedApiTimeResolution } from '@/lib/defined/types';
 import { Separator } from '@/components/ui/separator';
+import { useRouter } from '@/hooks/useRouter';
+import { usePathname, useSearchParams } from 'next/navigation';
 import LiveNumber from '@/components/live-number';
 import TableDataTrending from './table-data-trending';
 import TableDataMarketCap from './table-data-marketcap';
-import { useRouter } from '@/hooks/useRouter';
-import { usePathname, useSearchParams } from 'next/navigation';
 import NProgress from 'nprogress';
 import TableDataNew from './table-data-new';
+import { DefinedTopToken } from '@/lib/defined/schema/defined-top-token.schema';
+import { DefinedNewToken } from '@/lib/defined/schema/defined-new-token.schema';
 
 export type DataSummary = {
   marketCap: number;
@@ -31,12 +32,22 @@ export type DataSummary = {
 };
 
 function Dashboard({
-  initialData,
   resolution,
-}: Readonly<{ initialData: DefinedTopTokenModel[]; resolution: DefinedApiTimeResolution }>) {
+  initialTab,
+  trendingData,
+  newTokenData,
+}: Readonly<{
+  resolution: DefinedApiTimeResolution;
+  initialTab: string;
+  trendingData: DefinedTopToken[];
+  newTokenData: DefinedNewToken[];
+}>) {
   const [dataSummary, setDataSummary] = useState({ marketCap: 0, volume: 0, transaction: 0 });
-  const [activeTab, setActiveTab] = useState('trending');
+  const [activeTab, setActiveTab] = useState(initialTab);
+  const [res, setRes] = useState(resolution);
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const handleDataSummaryChange = (data: DataSummary) => {
     setDataSummary({
@@ -46,15 +57,28 @@ function Dashboard({
     });
   };
 
-  const resolutionHandler = (resolution: string) => {
+  const resolutionHandler = (resolution: DefinedApiTimeResolution) => {
+    setRes(resolution);
     const url = new URL(window.location.href);
 
     url.searchParams.set('resolution', resolution);
     router.push(url.toString());
   };
 
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const tabChangeHandler = (tab: string) => {
+    setActiveTab(tab);
+    const url = new URL(window.location.href);
+
+    url.searchParams.set('tab', tab);
+    router.push(url.toString());
+  };
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const resolution = url.searchParams.get('resolution');
+
+    if (!resolution) setRes('1D');
+  }, [resolution]);
 
   useEffect(() => {
     NProgress.done();
@@ -87,7 +111,7 @@ function Dashboard({
       <Separator className="mt-2" />
 
       <div className="sticky top-0 py-4 flex flex-wrap w-full dark:bg-stone-950 z-50 gap-2">
-        <Tabs defaultValue={resolution} className="space-y-4">
+        <Tabs defaultValue={resolution} value={res} className="space-y-4">
           <TabsList>
             <TabsTrigger value="60" onClick={() => resolutionHandler('60')}>
               1H
@@ -106,19 +130,19 @@ function Dashboard({
         <nav className={cn('flex items-center space-x-2')}>
           <Button
             variant={activeTab === 'marketcap' ? 'default' : 'ghost'}
-            onClick={() => setActiveTab('marketcap')}>
+            onClick={() => tabChangeHandler('marketcap')}>
             <BarChart className="mr-2 h-4 w-4" />
             Market Cap
           </Button>
           <Button
             variant={activeTab === 'trending' ? 'default' : 'ghost'}
-            onClick={() => setActiveTab('trending')}>
+            onClick={() => tabChangeHandler('trending')}>
             <Flame className="mr-2 h-4 w-4" />
             Trending
           </Button>
           <Button
             variant={activeTab === 'new' ? 'default' : 'ghost'}
-            onClick={() => setActiveTab('new')}>
+            onClick={() => tabChangeHandler('new')}>
             <Leaf className="mr-2 h-4 w-4" />
             New
           </Button>
@@ -139,13 +163,15 @@ function Dashboard({
         </nav>
       </div>
 
-      {activeTab === 'trending' && (
-        <TableDataTrending dataSummary={handleDataSummaryChange} initialData={initialData} />
-      )}
-
       {activeTab === 'marketcap' && <TableDataMarketCap />}
 
-      {activeTab === 'new' && <TableDataNew />}
+      {activeTab === 'trending' && (
+        <TableDataTrending dataSummary={handleDataSummaryChange} initialData={trendingData} />
+      )}
+
+      {activeTab === 'new' && (
+        <TableDataNew dataSummary={handleDataSummaryChange} initialData={newTokenData} />
+      )}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { CacheKeys, NetworkNames, TimeResolution } from '../constants';
 import { BlockchainDataProvider } from '../providers/blockchain-data-provider';
 import { DefinedApiClient, GqlTag } from './client';
-import { DefinedNetworkModel } from './types';
+import { DefinedNetwork } from './schema/defined-network.schema';
 import { RedisClient } from '@/lib/redis/client';
 
 export class DefinedApiNetworkClient {
@@ -17,11 +17,11 @@ export class DefinedApiNetworkClient {
     const existingData = await redisClient.get(CacheKeys.NETWORK_DATA);
 
     if (existingData) {
-      return JSON.parse(existingData) as DefinedNetworkModel[];
+      return JSON.parse(existingData) as DefinedNetwork[];
     }
 
     return this.client
-      .query<DefinedNetworkModel[]>(
+      .query<DefinedNetwork[]>(
         queryName,
         GqlTag`{
             ${queryName} {

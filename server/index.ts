@@ -17,7 +17,7 @@ export const appRouter = router({
     .query(async ({ input }) => {
       const client = DefinedApiClient.getInstance();
       const tokenClient = new DefinedApiTokenClient(client);
-      const res: DefinedApiTimeResolution = input.resolution || '60';
+      const res: DefinedApiTimeResolution = input.resolution || '1D';
 
       return await tokenClient.getTopTokens(res, input.networkId);
     }),
@@ -25,10 +25,20 @@ export const appRouter = router({
     const client = DefinedApiClient.getInstance();
     const networkClient = new DefinedApiNetworkClient(client);
 
-    const data = await networkClient.getNetworks();
-
-    return data;
+    return await networkClient.getNetworks();
   }),
+  'new-tokens': publicProcedure
+    .input(
+      z.object({
+        networkId: z.number().optional(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const client = DefinedApiClient.getInstance();
+      const tokenClient = new DefinedApiTokenClient(client);
+
+      return await tokenClient.getNewTokens(input.networkId);
+    }),
 });
 
 export type AppRouter = typeof appRouter;
