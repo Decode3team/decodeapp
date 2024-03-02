@@ -23,6 +23,7 @@ export const appRouter = router({
     .input(
       z.object({
         resolution: ResolutionSchema,
+        networkId: z.number().optional(),
       }),
     )
     .query(async ({ input }) => {
@@ -30,15 +31,13 @@ export const appRouter = router({
       const tokenClient = new DefinedApiTokenClient(client);
       const res: DefinedApiTimeResolution = input.resolution || '60';
 
-      return await tokenClient.getTopTokens(res);
+      return await tokenClient.getTopTokens(res, input.networkId);
     }),
   'decode-networks': publicProcedure.query(async () => {
     const client = DefinedApiClient.getInstance();
     const networkClient = new DefinedApiNetworkClient(client);
 
     const data = await networkClient.getNetworks();
-
-    console.log('>>', data);
 
     return data;
   }),

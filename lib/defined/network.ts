@@ -1,4 +1,4 @@
-import { CacheKeys, TimeResolution } from '../constants';
+import { CacheKeys, NetworkNames, TimeResolution } from '../constants';
 import { BlockchainDataProvider } from '../providers/blockchain-data-provider';
 import { DefinedApiClient } from './client';
 import { DefinedNetworkModel } from './types';
@@ -40,6 +40,7 @@ export class DefinedApiNetworkClient {
               ...d,
               ...{
                 logo: `/logos/networks/${d.name}.png`,
+                nameString: NetworkNames[d.name as keyof typeof NetworkNames] || d.name,
               },
             };
           });

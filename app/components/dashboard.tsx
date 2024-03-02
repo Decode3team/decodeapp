@@ -29,6 +29,7 @@ import { useState } from 'react';
 import { DefinedApiTimeResolution, DefinedTopTokenModel } from '@/lib/defined/types';
 import { trpc } from '../_trpc/client';
 import LiveNumber from '@/components/live-number';
+import { useNetworkProvider } from '@/providers/network-provider';
 // import TableData from './table-data';
 // import { columns } from './table-column';
 // import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
@@ -41,10 +42,12 @@ const format = (num: number, format = '0.0.00a') => {
 };
 
 function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel[] }>) {
+  const { selectedNetwork } = useNetworkProvider();
   const [resolution, setResolution] = useState<DefinedApiTimeResolution>('1D');
   const { data } = trpc['top-tokens'].useQuery(
     {
       resolution,
+      networkId: selectedNetwork?.id,
     },
     {
       initialData,
@@ -260,11 +263,20 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
                         />
                         <AvatarFallback>{token.name.slice(0, 2).toUpperCase()}</AvatarFallback>
                       </Avatar>
-                      {token.name}
+                      <span className="max-w-[260px] truncate whitespace-nowrap">{token.name}</span>
                       <Badge variant="secondary">{token.symbol}</Badge>
                     </div>
                   </TableCell>
-                  <TableCell>${format(token.price, '0,0.000000a')}</TableCell>
+                  <TableCell>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        $<LiveNumber num={token.price} format="0,0.000a" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        ${token.price.toFixed(12).replace(/(\.\d*?[1-9])0+$/, '$1')}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TableCell>
 
                   <TableCell className="text-center">
                     <LiveNumber num={token.txnCount1} format="0,0" />
@@ -279,19 +291,21 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
                     <LiveNumber num={token.txnCount24} format="0,0" />
                   </TableCell>
 
-                  <TableCell>{format(parseFloat(token.volume))}</TableCell>
+                  <TableCell>
+                    <LiveNumber num={token.volume} format="0,0.00a" />
+                  </TableCell>
 
                   <TableCell className="text-center">
-                    <LiveNumber num={token.priceChange1} format="0,0.000000a" live sign />
+                    <LiveNumber num={token.priceChange1} format="0,0.000" live sign />
                   </TableCell>
                   <TableCell className="text-center">
-                    <LiveNumber num={token.priceChange4} format="0,0.000000a" live sign />
+                    <LiveNumber num={token.priceChange4} format="0,0.000" live sign />
                   </TableCell>
                   <TableCell className="text-center">
-                    <LiveNumber num={token.priceChange12} format="0,0.000000a" live sign />
+                    <LiveNumber num={token.priceChange12} format="0,0.000" live sign />
                   </TableCell>
                   <TableCell className="text-center">
-                    <LiveNumber num={token.priceChange24} format="0,0.000000a" live sign />
+                    <LiveNumber num={token.priceChange24} format="0,0.000" live sign />
                   </TableCell>
                   <TableCell>{format(parseFloat(token.liquidity))}</TableCell>
                 </TableRow>

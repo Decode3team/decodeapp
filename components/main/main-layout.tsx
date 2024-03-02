@@ -11,7 +11,7 @@ type MainLayoutProps = {
   mainNavigation: NavData[];
 };
 
-export default function MainLayout({ collapsed, mainNavigation }: MainLayoutProps) {
+export default function MainLayout({ collapsed, mainNavigation }: Readonly<MainLayoutProps>) {
   const [isCollapsed, setIsCollapsed] = React.useState(collapsed);
 
   const collapseHandler = () => {
@@ -33,8 +33,8 @@ export default function MainLayout({ collapsed, mainNavigation }: MainLayoutProp
         <MainDecode isCollapsed={isCollapsed} onClick={collapseHandler} />
         <Separator />
         <div className="p-2">
-          {mainNavigation.map((nav, i) => (
-            <MainNav key={i} data={nav} collapsed={isCollapsed} />
+          {mainNavigation.map((nav) => (
+            <MainNav key={nav.name} data={nav} collapsed={isCollapsed} />
           ))}
         </div>
       </div>

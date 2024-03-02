@@ -2,11 +2,13 @@ import './globals.css';
 import { ArrowDownUp, BarChart2, Bell, Star, Wallet } from 'lucide-react';
 import { Inter } from 'next/font/google';
 import { cookies } from 'next/headers';
-import { ThemeProvider } from '@/components/theme-provider';
+import { ThemeProvider } from '@/providers/theme-provider';
 import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
 import TRPCProvider from './_trpc/trpc-provider';
 import MainSidebar from '@/components/main/main-sidebar';
+import NetworkProviders from '@/providers/network-provider';
+import { serverClient } from './_trpc/server-client';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -15,7 +17,7 @@ export const metadata: Metadata = {
   description: 'on-chain crypto metrics ',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -55,6 +57,8 @@ export default function RootLayout({
     },
   ];
 
+  const networks = await serverClient['decode-networks']();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(inter.className, 'dark:bg-stone-950')} suppressHydrationWarning>
@@ -64,12 +68,18 @@ export default function RootLayout({
             defaultTheme="dark"
             enableSystem
             disableTransitionOnChange>
-            <main className="flex flex-row min-h-screen relative">
-              <MainSidebar collapsed={defaultCollapsed} mainNavigation={mainNav} />
-              <div className="flex grow min-h-screen p-4 max-w-full overflow-x-clip justify-center">
-                {children}
-              </div>
-            </main>
+            <NetworkProviders>
+              <main className="flex flex-row min-h-screen relative">
+                <MainSidebar
+                  collapsed={defaultCollapsed}
+                  mainNavigation={mainNav}
+                  networks={networks}
+                />
+                <div className="flex grow min-h-screen p-4 max-w-full overflow-x-clip justify-center">
+                  {children}
+                </div>
+              </main>
+            </NetworkProviders>
           </ThemeProvider>
         </TRPCProvider>
       </body>

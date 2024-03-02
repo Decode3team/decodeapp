@@ -5,6 +5,8 @@ import Dashboard from './components/dashboard';
 export default async function Home() {
   const data = await serverClient['top-tokens']({ resolution: '1D' });
 
+  // data.map((o) => console.log(o.name, o.price));
+
   return (
     <div className="flex w-full flex-col gap-4">
       <Card>

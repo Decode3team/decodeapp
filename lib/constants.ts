@@ -38,3 +38,18 @@ export const ApiTimeResolutionValue = {
   '720': '720', // 12 hour
   '1D': '1D', // 24 hour
 } as const;
+
+export const NetworkNames = {
+  eth: 'Ethereum',
+  polygon: 'Polygon',
+  binance: 'Binance',
+  arbitrum: 'Arbitrum',
+  base: 'Base',
+  optimism: 'Optimism',
+  blast: 'Blast',
+  avalanche: 'Avalanche',
+  fantom: 'Fantom',
+  mantle: 'Mantle',
+  moonbeam: 'Moonbeam',
+  celo: 'Celo',
+};

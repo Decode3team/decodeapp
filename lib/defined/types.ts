@@ -10,6 +10,7 @@ export type DefinedNetworkModel = {
   id: number;
   name: string;
   logo: string;
+  nameString: string;
 };
 
 export type DefinedTopTokenModel = {
