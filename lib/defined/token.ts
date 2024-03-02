@@ -14,7 +14,7 @@ export class DefinedApiTokenClient {
   }
 
   async getTopTokens(resolution: DefinedApiTimeResolution = '60', networkId?: number) {
-    const cacheKey = CacheKeys.TOP_TOKEN[resolution] + `_${networkId}`;
+    const cacheKey = 'getTopTokens' + CacheKeys.TOP_TOKEN[resolution] + `_${networkId}`;
     const existingData = await this.redisClient.get(cacheKey);
 
     if (existingData?.length && existingData.length > 0) {
@@ -28,6 +28,8 @@ export class DefinedApiTokenClient {
       .filter((n) => (networkId ? n.id === networkId : true))
       .map((n) => n.id)
       .join(',');
+
+    console.log(networks);
 
     return this.client
       .query<DefinedTopTokenModel[]>(
@@ -81,5 +83,14 @@ export class DefinedApiTokenClient {
 
         return filteredRes;
       });
+  }
+
+  async getTopTokensByMarketCap(resolution: DefinedApiTimeResolution = '60', networkId?: number) {
+    const cacheKey = 'getTopTokensByMarketCap' + CacheKeys.TOP_TOKEN[resolution] + `_${networkId}`;
+    const existingData = await this.redisClient.get(cacheKey);
+
+    if (existingData?.length && existingData.length > 0) {
+      return JSON.parse(existingData) as DefinedTopTokenModel[];
+    }
   }
 }

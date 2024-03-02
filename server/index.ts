@@ -7,18 +7,6 @@ import { ResolutionSchema } from '@/lib/zod-schema';
 import { DefinedApiNetworkClient } from '@/lib/defined/network';
 
 export const appRouter = router({
-  // hello: publicProcedure
-  //   .input(
-  //     z.object({
-  //       name: z.string(),
-  //     }),
-  //   )
-  //   .query(async ({ input: any }) => {
-  //     return `Hello, ${input.name}`;
-  //   }),
-
-  // TODO: CLEAN UP DUTY
-  // TODO: SAVE TO DB
   'top-tokens': publicProcedure
     .input(
       z.object({
