@@ -3,11 +3,11 @@
 import LiveNumber from '@/components/live-number';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { DefinedTopTokenModel } from '@/lib/defined/types';
+import { DefinedTopToken } from '@/lib/defined/schema/defined-top-token.schema';
 import { Column, ColumnDef } from '@tanstack/react-table';
 import { ArrowDown, ArrowRightLeft, ArrowUp, ArrowUpDown, Tag } from 'lucide-react';
 
-const SortArrow = ({ column }: { column: Column<DefinedTopTokenModel> }) => {
+const SortArrow = ({ column }: { column: Column<DefinedTopToken> }) => {
   if (column.getIsSorted() === 'desc') {
     return <ArrowDown size={12} />;
   }
@@ -19,7 +19,7 @@ const SortArrow = ({ column }: { column: Column<DefinedTopTokenModel> }) => {
   return <ArrowUpDown size={12} />;
 };
 
-export const columns: ColumnDef<DefinedTopTokenModel>[] = [
+export const columns: ColumnDef<DefinedTopToken>[] = [
   {
     accessorKey: 'name',
     header: 'Name',

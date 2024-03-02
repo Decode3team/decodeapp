@@ -7,18 +7,19 @@ import MainDecode from './main-decode';
 import MainNav, { NavData } from './main-nav';
 import { ScrollArea } from '../ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { DefinedNetworkModel } from '@/lib/defined/types';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { DefinedNetwork } from '@/lib/defined/schema/defined-network.schema';
+import { useRouter } from '@/hooks/useRouter';
 
 type MainSidebarProps = {
   collapsed: boolean;
   mainNavigation: NavData[];
-  networks: DefinedNetworkModel[];
+  networks: DefinedNetwork[];
 };
 
 function MainSidebar({ collapsed = false, mainNavigation, networks }: Readonly<MainSidebarProps>) {
   const [isCollapsed, setIsCollapsed] = useState(collapsed);
-  const [selectedNetwork, setSelectedNetwork] = useState<DefinedNetworkModel | null>(null);
+  const [selectedNetwork, setSelectedNetwork] = useState<DefinedNetwork | null>(null);
   const router = useRouter();
   const params = useSearchParams();
 
@@ -30,7 +31,7 @@ function MainSidebar({ collapsed = false, mainNavigation, networks }: Readonly<M
     });
   };
 
-  const networkClickHandler = (network: DefinedNetworkModel) => {
+  const networkClickHandler = (network: DefinedNetwork) => {
     setSelectedNetwork(network);
     const url = new URL(window.location.href);
     const resolution = url.searchParams.get('resolution');
@@ -38,10 +39,10 @@ function MainSidebar({ collapsed = false, mainNavigation, networks }: Readonly<M
     url.searchParams.set('id', network.id.toString().toLowerCase());
     url.searchParams.set('resolution', resolution ?? '1D');
 
-    router.push(url.toString());
+    router.push(`/?${url.searchParams.toString()}`);
   };
 
-  const isCurrentNetwork = (network: DefinedNetworkModel) => {
+  const isCurrentNetwork = (network: DefinedNetwork) => {
     const networkId = String(selectedNetwork?.id).toLowerCase() ?? '';
 
     return networkId === network.id.toString().toLowerCase();
@@ -81,7 +82,6 @@ function MainSidebar({ collapsed = false, mainNavigation, networks }: Readonly<M
                 active={isCurrentNetwork(network)}
                 data={{
                   name: network.nameString,
-                  // href: `/network?id=${network.id}${resolution ? `&resolution=${resolution}` : ''}`,
                   onClick: () => networkClickHandler(network),
                   icon: (
                     <Avatar className="w-[22px] h-[22px] dark:bg-slate-950">

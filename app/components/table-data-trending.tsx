@@ -10,16 +10,16 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { DefinedTopTokenModel } from '@/lib/defined/types';
 import { ArrowRightLeft, Tag } from 'lucide-react';
 import { useEffect } from 'react';
 import { DataSummary } from './dashboard';
+import { DefinedTopToken } from '@/lib/defined/schema/defined-top-token.schema';
 
 function TableDataTrending({
   initialData,
   dataSummary,
 }: Readonly<{
-  initialData?: DefinedTopTokenModel[];
+  initialData?: DefinedTopToken[];
   dataSummary: (data: DataSummary) => void;
 }>) {
   const data = initialData;

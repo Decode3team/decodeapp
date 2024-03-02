@@ -9,7 +9,10 @@ import { cn } from '@/lib/utils';
 
 import { Button } from '../ui/button';
 
-function MainDecode({ isCollapsed, onClick }: { isCollapsed: boolean; onClick: () => void }) {
+function MainDecode({
+  isCollapsed,
+  onClick,
+}: Readonly<{ isCollapsed: boolean; onClick: () => void }>) {
   const nodeRef = useRef(null);
   const logoRef = useRef(null);
 
@@ -27,7 +30,7 @@ function MainDecode({ isCollapsed, onClick }: { isCollapsed: boolean; onClick: (
           unmountOnExit
           nodeRef={nodeRef}>
           <div ref={nodeRef} className="flex items-center">
-            <Link href="/">
+            <Link href="/" replace>
               <Image src="/decode.png" alt="Decode" width={140} height={26} />
             </Link>
           </div>
