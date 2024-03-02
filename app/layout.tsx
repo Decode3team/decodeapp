@@ -7,8 +7,9 @@ import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
 import TRPCProvider from './_trpc/trpc-provider';
 import MainSidebar from '@/components/main/main-sidebar';
-import NetworkProviders from '@/providers/network-provider';
 import { serverClient } from './_trpc/server-client';
+import { Card } from '@/components/ui/card';
+import NextTopLoader from 'nextjs-toploader';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -62,24 +63,30 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(inter.className, 'dark:bg-stone-950')} suppressHydrationWarning>
+        <NextTopLoader showSpinner={false} color="#bff311" />
         <TRPCProvider>
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
             enableSystem
             disableTransitionOnChange>
-            <NetworkProviders>
-              <main className="flex flex-row min-h-screen relative">
-                <MainSidebar
-                  collapsed={defaultCollapsed}
-                  mainNavigation={mainNav}
-                  networks={networks}
-                />
-                <div className="flex grow min-h-screen p-4 max-w-full overflow-x-clip justify-center">
+            <main className="flex flex-row min-h-screen relative">
+              <MainSidebar
+                collapsed={defaultCollapsed}
+                mainNavigation={mainNav}
+                networks={networks}
+              />
+              <div className="flex flex-col grow min-h-screen p-4 max-w-full overflow-x-clip gap-4 justify-center">
+                <Card>
+                  <div className="p-4">
+                    Smog Token Next 100x SOL Meme Coin? Claim the FREE Airdrop!
+                  </div>
+                </Card>
+                <div className="flex grow min-h-screen max-w-full overflow-x-clip justify-center">
                   {children}
                 </div>
-              </main>
-            </NetworkProviders>
+              </div>
+            </main>
           </ThemeProvider>
         </TRPCProvider>
       </body>

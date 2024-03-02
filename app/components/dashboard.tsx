@@ -12,11 +12,17 @@ import {
 } from '@/components/ui/sheet';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DefinedApiTimeResolution, DefinedTopTokenModel } from '@/lib/defined/types';
-import LiveNumber from '@/components/live-number';
+// import { useRouter } from 'next/navigation';
 import { Separator } from '@/components/ui/separator';
+import LiveNumber from '@/components/live-number';
 import TableDataTrending from './table-data-trending';
+import TableDataMarketCap from './table-data-marketcap';
+import { useRouter } from '@/hooks/useRouter';
+import { usePathname, useSearchParams } from 'next/navigation';
+import NProgress from 'nprogress';
+import TableDataNew from './table-data-new';
 
 export type DataSummary = {
   marketCap: number;
@@ -24,10 +30,13 @@ export type DataSummary = {
   transaction: number;
 };
 
-function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel[] }>) {
-  const [resolution, setResolution] = useState<DefinedApiTimeResolution>('1D');
+function Dashboard({
+  initialData,
+  resolution,
+}: Readonly<{ initialData: DefinedTopTokenModel[]; resolution: DefinedApiTimeResolution }>) {
   const [dataSummary, setDataSummary] = useState({ marketCap: 0, volume: 0, transaction: 0 });
   const [activeTab, setActiveTab] = useState('trending');
+  const router = useRouter();
 
   const handleDataSummaryChange = (data: DataSummary) => {
     setDataSummary({
@@ -36,6 +45,20 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
       transaction: data.transaction,
     });
   };
+
+  const resolutionHandler = (resolution: string) => {
+    const url = new URL(window.location.href);
+
+    url.searchParams.set('resolution', resolution);
+    router.push(url.toString());
+  };
+
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    NProgress.done();
+  }, [pathname, searchParams]);
 
   return (
     <div className="flex w-full flex-col">
@@ -66,16 +89,16 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
       <div className="sticky top-0 py-4 flex flex-wrap w-full dark:bg-stone-950 z-50 gap-2">
         <Tabs defaultValue={resolution} className="space-y-4">
           <TabsList>
-            <TabsTrigger value="5" onClick={() => setResolution('60')}>
+            <TabsTrigger value="60" onClick={() => resolutionHandler('60')}>
               1H
             </TabsTrigger>
-            <TabsTrigger value="60" onClick={() => setResolution('240')}>
+            <TabsTrigger value="240" onClick={() => resolutionHandler('240')}>
               4H
             </TabsTrigger>
-            <TabsTrigger value="720" onClick={() => setResolution('720')}>
+            <TabsTrigger value="720" onClick={() => resolutionHandler('720')}>
               12H
             </TabsTrigger>
-            <TabsTrigger value="1D" onClick={() => setResolution('1D')}>
+            <TabsTrigger value="1D" onClick={() => resolutionHandler('1D')}>
               24H
             </TabsTrigger>
           </TabsList>
@@ -117,8 +140,12 @@ function Dashboard({ initialData }: Readonly<{ initialData: DefinedTopTokenModel
       </div>
 
       {activeTab === 'trending' && (
-        <TableDataTrending resolution={resolution} dataSummary={handleDataSummaryChange} />
+        <TableDataTrending dataSummary={handleDataSummaryChange} initialData={initialData} />
       )}
+
+      {activeTab === 'marketcap' && <TableDataMarketCap />}
+
+      {activeTab === 'new' && <TableDataNew />}
     </div>
   );
 }

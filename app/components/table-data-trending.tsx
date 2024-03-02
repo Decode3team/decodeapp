@@ -10,34 +10,19 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { DefinedApiTimeResolution, DefinedTopTokenModel } from '@/lib/defined/types';
-import { useNetworkProvider } from '@/providers/network-provider';
+import { DefinedTopTokenModel } from '@/lib/defined/types';
 import { ArrowRightLeft, Tag } from 'lucide-react';
-import { trpc } from '../_trpc/client';
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { DataSummary } from './dashboard';
-import TableLoading from './table-loading';
 
 function TableDataTrending({
-  resolution,
   initialData,
   dataSummary,
 }: Readonly<{
-  resolution: DefinedApiTimeResolution;
   initialData?: DefinedTopTokenModel[];
   dataSummary: (data: DataSummary) => void;
 }>) {
-  const { selectedNetwork } = useNetworkProvider();
-  const { data, isLoading } = trpc['top-tokens'].useQuery(
-    {
-      resolution,
-      networkId: selectedNetwork?.id,
-    },
-    {
-      initialData,
-    },
-  );
-
+  const data = initialData;
   const hasData = data && data.length > 0;
 
   useEffect(() => {
@@ -56,10 +41,6 @@ function TableDataTrending({
       dataSummary({ marketCap, volume, transaction });
     }
   }, [data]);
-
-  if (isLoading) {
-    return <TableLoading />;
-  }
 
   return (
     <div className="flex w-full rounded-md border overflow-x-auto">
@@ -203,7 +184,7 @@ function TableDataTrending({
                   </TableCell>
 
                   <TableCell>
-                    <LiveNumber num={token.volume} format="0,0.00a" />
+                    <LiveNumber num={Number(token.volume)} format="0,0.00a" />
                   </TableCell>
 
                   <TableCell className="text-center">
@@ -219,7 +200,7 @@ function TableDataTrending({
                     <LiveNumber num={token.priceChange24} format="0,0.00%" live sign />
                   </TableCell>
                   <TableCell>
-                    <LiveNumber num={token.liquidity} format="0,0.00a" />
+                    <LiveNumber num={Number(token.liquidity)} format="0,0.00a" />
                   </TableCell>
                 </TableRow>
               ))}

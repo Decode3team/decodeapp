@@ -13,7 +13,10 @@ export class DefinedApiTokenClient {
     this.redisClient = RedisClient.getInstance();
   }
 
-  async getTopTokens(resolution: DefinedApiTimeResolution = '60', networkId?: number) {
+  async getTopTokens(
+    resolution: DefinedApiTimeResolution = '60',
+    networkId?: number,
+  ): Promise<DefinedTopTokenModel[]> {
     const cacheKey = 'getTopTokens' + CacheKeys.TOP_TOKEN[resolution] + `_${networkId}`;
     const existingData = await this.redisClient.get(cacheKey);
 
