@@ -1,4 +1,4 @@
-import { DefinedApiClient } from './client';
+import { DefinedApiClient, GqlTag } from './client';
 import { RedisClient } from '@/lib/redis/client';
 import { DefinedApiNetworkClient } from './network';
 import { CacheKeys, TimeResolution } from '../constants';
@@ -10,50 +10,59 @@ export class DefinedApiTokenClient {
 
   constructor(client: DefinedApiClient) {
     this.client = client;
-    this.redisClient = new RedisClient();
+    this.redisClient = RedisClient.getInstance();
   }
 
-  async getTopTokens(resolution: DefinedApiTimeResolution = '60') {
-    const networkClient = new DefinedApiNetworkClient(this.client);
-    const networks = await networkClient.getNetworks();
-    const queryName = 'listTopTokens';
-    const existingData = await this.redisClient.get(CacheKeys.TOP_TOKEN[resolution]);
+  async getTopTokens(
+    resolution: DefinedApiTimeResolution = '60',
+    networkId?: number,
+  ): Promise<DefinedTopTokenModel[]> {
+    const cacheKey = 'getTopTokens' + CacheKeys.TOP_TOKEN[resolution] + `_${networkId}`;
+    const existingData = await this.redisClient.get(cacheKey);
 
     if (existingData?.length && existingData.length > 0) {
       return JSON.parse(existingData) as DefinedTopTokenModel[];
     }
 
+    const queryName = 'listTopTokens';
+    const networkClient = new DefinedApiNetworkClient(this.client);
+    const networks = await networkClient.getNetworks();
+    const networkFilter = networks
+      .filter((n) => (networkId ? n.id === networkId : true))
+      .map((n) => n.id);
+
     return this.client
       .query<DefinedTopTokenModel[]>(
         queryName,
-        `
-            query {
-                ${queryName}(
-                    limit: 50
-                    networkFilter: [${networks.map((n) => n.id).join(',')}]
-                    resolution: "${resolution}"
-                ) {
-                    name
-                    symbol
-                    address
-                    imageSmallUrl
-                    imageThumbUrl
-                    imageLargeUrl
-                    volume
-                    liquidity
-                    price
-                    priceChange
-                    priceChange1
-                    priceChange4
-                    priceChange12
-                    priceChange24
-                    txnCount1
-                    txnCount4
-                    txnCount12
-                    txnCount24
-                    marketCap
-                }
-            }`,
+        GqlTag`
+          query ($networkFilter: [Int!], $limit: Int, $resolution: String) {
+            ${queryName}(networkFilter: $networkFilter, limit: $limit, resolution: $resolution) {
+              name
+              symbol
+              address
+              imageSmallUrl
+              imageThumbUrl
+              imageLargeUrl
+              volume
+              liquidity
+              price
+              priceChange
+              priceChange1
+              priceChange4
+              priceChange12
+              priceChange24
+              txnCount1
+              txnCount4
+              txnCount12
+              txnCount24
+              marketCap
+            }
+          }`,
+        {
+          networkFilter,
+          limit: 50,
+          resolution,
+        },
       )
       .then(async (res) => {
         const uniqueItems = res.reduce((acc, currentItem) => {
@@ -70,10 +79,19 @@ export class DefinedApiTokenClient {
         await this.redisClient.set(
           CacheKeys.TOP_TOKEN[resolution],
           JSON.stringify(filteredRes),
-          TimeResolution[resolution],
+          TimeResolution[5],
         );
 
         return filteredRes;
       });
+  }
+
+  async getTopTokensByMarketCap(resolution: DefinedApiTimeResolution = '60', networkId?: number) {
+    const cacheKey = 'getTopTokensByMarketCap' + CacheKeys.TOP_TOKEN[resolution] + `_${networkId}`;
+    const existingData = await this.redisClient.get(cacheKey);
+
+    if (existingData?.length && existingData.length > 0) {
+      return JSON.parse(existingData) as DefinedTopTokenModel[];
+    }
   }
 }

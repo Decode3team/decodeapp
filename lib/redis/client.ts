@@ -1,9 +1,10 @@
 import { Redis, RedisOptions } from 'ioredis';
 
 export class RedisClient {
+  private static instance: RedisClient;
   private client: Redis;
 
-  constructor() {
+  private constructor() {
     const redisOptions: RedisOptions = {
       host: process.env.REDIS_ENDPOINT ?? 'redis',
       port: process.env.REDIS_PORT ? Number(process.env.REDIS_PORT) : 6379,
@@ -13,14 +14,27 @@ export class RedisClient {
     this.client = new Redis(redisOptions);
   }
 
-  async set(key: string, value: string, expirationInSeconds?: number) {
-    const args: [string, string | number] = [key, value];
-
-    if (expirationInSeconds) {
-      args.push(...['EX', expirationInSeconds]);
+  public static getInstance(): RedisClient {
+    if (!RedisClient.instance) {
+      RedisClient.instance = new RedisClient();
     }
 
-    await this.client.set(...args);
+    return RedisClient.instance;
+  }
+
+  async set(key: string, value: string, expirationInSeconds?: number) {
+    try {
+      const args: [string, string | number] = [key, value];
+
+      if (expirationInSeconds) {
+        args.push(...['EX', expirationInSeconds]);
+      }
+
+      await this.client.set(...args);
+    } catch (error) {
+      this.quit();
+      throw error;
+    }
   }
 
   async get(key: string) {
@@ -29,7 +43,7 @@ export class RedisClient {
     return result;
   }
 
-  quit() {
-    this.client.quit();
+  async quit() {
+    await this.client.quit();
   }
 }

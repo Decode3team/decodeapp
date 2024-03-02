@@ -17,11 +17,26 @@ const getColorClass = (value: number): string => {
   return ''; // Return an empty string if value is 0 or not a valid number
 };
 
-const getDisplayNum = (num: number, formattedNum: string, shouldSign: boolean): string => {
+const formatNumber = (num: number, format: string, shouldSign: boolean): string => {
+  const formattedNum = numeral(num).format(format).toUpperCase();
+
   if (!shouldSign || num === 0) return formattedNum;
   const sign = num > 0 ? '+' : '';
 
   return `${sign}${formattedNum}`;
+};
+
+const ZeroExponent = ({ num }: { num: number }) => {
+  const expForm = num.toExponential(2);
+  const [base, exponent] = expForm.split('e-');
+  const significantDigits = base.replace('.', '').substring(0, 3);
+
+  return (
+    <span>
+      0.0<sup className="text-[10px]">{Number(exponent) - 2}</sup>
+      {significantDigits}
+    </span>
+  );
 };
 
 const LiveNumber: React.FC<LiveNumberProps> = ({
@@ -31,12 +46,14 @@ const LiveNumber: React.FC<LiveNumberProps> = ({
   className,
   sign = false,
 }) => {
-  const threshold = 1e-6;
-  const isValidNumber = isFinite(num) && Math.abs(num) >= threshold;
-  const val = isValidNumber ? num : 0;
-  const formattedNum = numeral(val).format(format).toUpperCase();
-  const displayNum = getDisplayNum(val, formattedNum, sign);
-  const colorClass = getColorClass(val);
+  const normalizedNum = parseFloat(Number(num).toFixed(10));
+
+  if (normalizedNum > 0 && normalizedNum < 0.0001) {
+    return <ZeroExponent num={normalizedNum} />;
+  }
+
+  const displayNum = formatNumber(num, format, sign);
+  const colorClass = getColorClass(num);
   const finalClassName = live ? cn(className, colorClass) : className;
 
   return <span className={finalClassName}>{displayNum}</span>;

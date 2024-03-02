@@ -1,14 +1,14 @@
 import { ApiTimeResolutionValue } from '../constants';
 
 export type DefinedApiResponse<T> = {
-  data: {
-    [key: string]: T;
-  };
+  [key: string]: T;
 };
 
 export type DefinedNetworkModel = {
   id: number;
   name: string;
+  logo: string;
+  nameString: string;
 };
 
 export type DefinedTopTokenModel = {

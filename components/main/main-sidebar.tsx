@@ -1,19 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Separator } from '../ui/separator';
 import MainDecode from './main-decode';
 import MainNav, { NavData } from './main-nav';
 import { ScrollArea } from '../ui/scroll-area';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { DefinedNetworkModel } from '@/lib/defined/types';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 type MainSidebarProps = {
   collapsed: boolean;
   mainNavigation: NavData[];
+  networks: DefinedNetworkModel[];
 };
 
-function MainSidebar({ collapsed = false, mainNavigation }: Readonly<MainSidebarProps>) {
+function MainSidebar({ collapsed = false, mainNavigation, networks }: Readonly<MainSidebarProps>) {
   const [isCollapsed, setIsCollapsed] = useState(collapsed);
+  const [selectedNetwork, setSelectedNetwork] = useState<DefinedNetworkModel | null>(null);
+  const router = useRouter();
+  const params = useSearchParams();
+
   const collapseHandler = () => {
     setIsCollapsed((p) => {
       document.cookie = `react-layout:collapsed=${JSON.stringify(!p)}`;
@@ -21,6 +29,32 @@ function MainSidebar({ collapsed = false, mainNavigation }: Readonly<MainSidebar
       return !p;
     });
   };
+
+  const networkClickHandler = (network: DefinedNetworkModel) => {
+    setSelectedNetwork(network);
+    const url = new URL(window.location.href);
+    const resolution = url.searchParams.get('resolution');
+
+    url.searchParams.set('id', network.id.toString().toLowerCase());
+    url.searchParams.set('resolution', resolution ?? '1D');
+
+    router.push(url.toString());
+  };
+
+  const isCurrentNetwork = (network: DefinedNetworkModel) => {
+    const networkId = String(selectedNetwork?.id).toLowerCase() ?? '';
+
+    return networkId === network.id.toString().toLowerCase();
+  };
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const noSelectedNetwork = !url.searchParams.get('id');
+
+    if (noSelectedNetwork) {
+      setSelectedNetwork(null);
+    }
+  }, [params]);
 
   return (
     <div
@@ -38,7 +72,30 @@ function MainSidebar({ collapsed = false, mainNavigation }: Readonly<MainSidebar
               <MainNav key={nav.name} data={nav} collapsed={isCollapsed} />
             ))}
           </div>
-          <Separator />
+          <Separator className="my-2" />
+          <div>
+            {networks?.map((network) => (
+              <MainNav
+                className="mb-1"
+                key={network.id}
+                active={isCurrentNetwork(network)}
+                data={{
+                  name: network.nameString,
+                  // href: `/network?id=${network.id}${resolution ? `&resolution=${resolution}` : ''}`,
+                  onClick: () => networkClickHandler(network),
+                  icon: (
+                    <Avatar className="w-[22px] h-[22px] dark:bg-slate-950">
+                      <AvatarImage src={network.logo} srcSet={`${network.logo} 2x`} />
+                      <AvatarFallback className="text-[10px]">
+                        {network.name.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  ),
+                }}
+                collapsed={isCollapsed}
+              />
+            ))}
+          </div>
         </div>
       </ScrollArea>
     </div>
