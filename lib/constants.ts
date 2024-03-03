@@ -1,6 +1,17 @@
 import { DefinedApiTimeResolution } from './defined/types';
 
-export const hostUrl = process.env.NEXT_PUBLIC_HOST_URL ?? 'http://localhost:3000';
+export const wssPort = process.env.NEXT_PUBLIC_HOST_WEBSOCKET_PORT
+  ? Number(process.env.NEXT_PUBLIC_HOST_WEBSOCKET_PORT)
+  : 3001;
+
+export const hostPort = process.env.NEXT_PUBLIC_HOST_PORT
+  ? Number(process.env.NEXT_PUBLIC_HOST_PORT)
+  : 3000;
+
+export const hostDomain = process.env.NEXT_PUBLIC_HOST_DOMAIN ?? 'localhost';
+
+export const wssHostUrl = `ws://${hostDomain}:${wssPort}`;
+export const hostUrl = `http://${hostDomain}:${hostPort}`;
 
 export namespace CacheKeys {
   export const NETWORK_DATA = 'dfi_ntwk_data';

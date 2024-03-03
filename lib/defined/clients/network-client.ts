@@ -1,7 +1,7 @@
-import { CacheKeys, NetworkNames, TimeResolution } from '../constants';
-import { BlockchainDataProvider } from '../providers/blockchain-data-provider';
-import { DefinedApiClient, GqlTag } from './client';
-import { DefinedNetwork } from './schema/defined-network.schema';
+import { CacheKeys, NetworkNames, TimeResolution } from '../../constants';
+import { BlockchainDataProvider } from '../../providers/blockchain-data-provider';
+import { DefinedApiClient, GqlTag } from '../client';
+import { DefinedNetwork } from '../schema/defined-network.schema';
 import { RedisClient } from '@/lib/redis/client';
 
 export class DefinedApiNetworkClient {
@@ -14,26 +14,24 @@ export class DefinedApiNetworkClient {
   async getNetworks() {
     const queryName = 'getNetworks';
     const redisClient = RedisClient.getInstance();
-    const existingData = await redisClient.get(CacheKeys.NETWORK_DATA);
 
-    if (existingData) {
-      return JSON.parse(existingData) as DefinedNetwork[];
-    }
-
-    return this.client
-      .query<DefinedNetwork[]>(
-        queryName,
-        GqlTag`{
-            ${queryName} {
+    return redisClient.getOrSet(
+      CacheKeys.NETWORK_DATA,
+      async () => {
+        const res = await this.client.query<DefinedNetwork[]>(
+          queryName,
+          GqlTag`{
+              ${queryName} {
               name
               id
-            }
+              }
           }`,
-      )
-      .then(async (res) => {
+        );
+
         const dataProvider = new BlockchainDataProvider();
         const availableBlockChains = dataProvider.getData();
-        const data = res
+
+        return res
           .filter((d) => availableBlockChains.indexOf(d.name) !== -1)
           .map((d) => {
             return {
@@ -44,10 +42,8 @@ export class DefinedApiNetworkClient {
               },
             };
           });
-
-        await redisClient.set(CacheKeys.NETWORK_DATA, JSON.stringify(data), TimeResolution['1D']);
-
-        return data;
-      });
+      },
+      TimeResolution['1D'],
+    );
   }
 }

@@ -1,4 +1,5 @@
 import { Redis, RedisOptions } from 'ioredis';
+import { TimeResolution } from '../constants';
 
 export class RedisClient {
   private static instance: RedisClient;
@@ -41,6 +42,25 @@ export class RedisClient {
     const result = await this.client.get(key);
 
     return result;
+  }
+
+  async getOrSet<T>(
+    key: string,
+    dataFn: () => Promise<T>,
+    expirationInSeconds: number = TimeResolution[5],
+  ) {
+    const instance = RedisClient.getInstance();
+    const cachedData = await instance.get(key);
+
+    if (cachedData) {
+      return JSON.parse(cachedData) as T;
+    }
+
+    const newData = await dataFn();
+
+    await instance.set(key, JSON.stringify(newData), expirationInSeconds);
+
+    return newData;
   }
 
   async quit() {

@@ -11,7 +11,6 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 import { DefinedApiTimeResolution } from '@/lib/defined/types';
 import { Separator } from '@/components/ui/separator';
@@ -24,6 +23,7 @@ import NProgress from 'nprogress';
 import TableDataNew from './table-data-new';
 import { DefinedTopToken } from '@/lib/defined/schema/defined-top-token.schema';
 import { DefinedNewToken } from '@/lib/defined/schema/defined-new-token.schema';
+import { cn } from '@/lib/utils';
 
 export type DataSummary = {
   marketCap: number;
