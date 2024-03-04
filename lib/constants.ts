@@ -9,22 +9,34 @@ export const hostPort = process.env.NEXT_PUBLIC_HOST_PORT
   : 3000;
 
 export const hostDomain = process.env.NEXT_PUBLIC_HOST_DOMAIN ?? 'localhost';
+export const wssDomain = process.env.NEXT_PUBLIC_WEBSOCKET_DOMAIN ?? 'localhost';
 
-export const wssHostUrl = `ws://${hostDomain}:${wssPort}`;
+export const wssHostUrl = `ws://${wssDomain}:${wssPort}`;
 export const hostUrl = `http://${hostDomain}:${hostPort}`;
 
+const getNetworkIdCacheKeyFragment = (networkId?: number) => {
+  if (!networkId) {
+    return '';
+  }
+
+  return `:ntwrkId:${networkId}`;
+};
 export namespace CacheKeys {
   export const NETWORK_DATA = 'dfi_ntwk_data';
 
-  export const TOP_TOKEN: Record<DefinedApiTimeResolution, string> = {
-    '1': 'dfi_top_tkn_1m',
-    '5': 'dfi_top_tkn_5m',
-    '15': 'dfi_top_tkn_15m',
-    '30': 'dfi_top_tkn_30m',
-    '60': 'dfi_top_tkn_60m',
-    '240': 'dfi_top_tkn_240m',
-    '720': 'dfi_top_tkn_720m',
-    '1D': 'dfi_top_tkn_1D',
+  export const NEW_TOKEN = (networkId?: number) => {
+    return `dfi_new_tkn` + getNetworkIdCacheKeyFragment(networkId);
+  };
+
+  export const TOP_TOKEN = (resoltuion: DefinedApiTimeResolution, networkId?: number) => {
+    return `dfi_top_tkn:${resoltuion}` + getNetworkIdCacheKeyFragment(networkId);
+  };
+
+  export const TOP_TOKEN_BY_MARKETCAP = (
+    resoltuion: DefinedApiTimeResolution,
+    networkId?: number,
+  ) => {
+    return `dfi_top_tkn_mkt_cap:${resoltuion}` + getNetworkIdCacheKeyFragment(networkId);
   };
 }
 
@@ -53,7 +65,7 @@ export const ApiTimeResolutionValue = {
 export const NetworkNames = {
   eth: 'Ethereum',
   polygon: 'Polygon',
-  binance: 'Binance',
+  bsc: 'Binance',
   arbitrum: 'Arbitrum',
   base: 'Base',
   optimism: 'Optimism',

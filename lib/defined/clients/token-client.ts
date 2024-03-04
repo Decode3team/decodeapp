@@ -1,23 +1,23 @@
 import { DefinedApiClient, GqlTag } from '../client';
-import { RedisClient } from '@/lib/redis/client';
 import { CacheKeys } from '../../constants';
 import { DefinedApiTimeResolution } from '../types';
 import { DefinedTopToken } from '../schema/defined-top-token.schema';
 import { DefinedNewToken, DefinedNewTokenResult } from '../schema/defined-new-token.schema';
 import { DefinedApiNetworkClient } from './network-client';
+import { RedisClient } from '@/lib/redis/client';
 
 export class DefinedApiTokenClient {
   private client!: DefinedApiClient;
   private redisClient!: RedisClient;
 
-  constructor(client: DefinedApiClient) {
+  constructor(client: DefinedApiClient, redisClient: RedisClient) {
     this.client = client;
-    this.redisClient = RedisClient.getInstance();
+    this.redisClient = redisClient;
   }
 
   private async getNetworkFilters(networkId?: number) {
-    const networkClient = new DefinedApiNetworkClient(this.client);
-    const networks = await networkClient.getNetworks();
+    const networkClient = new DefinedApiNetworkClient(this.client, this.redisClient);
+    const networks = await networkClient.getNetworksFromCache();
     const networkFilter = networks
       .filter((n) => (networkId ? n.id === networkId : true))
       .map((n) => n.id);
@@ -29,16 +29,12 @@ export class DefinedApiTokenClient {
     resolution: DefinedApiTimeResolution = '60',
     networkId?: number,
   ): Promise<DefinedTopToken[]> {
-    const cacheKey = 'getTopTokens' + CacheKeys.TOP_TOKEN[resolution] + `_${networkId}`;
-
-    return this.redisClient.getOrSet(cacheKey, async () => {
-      const queryName = 'listTopTokens';
-      const networkFilter = await this.getNetworkFilters(networkId);
-
-      return this.client
-        .query<DefinedTopToken[]>(
-          queryName,
-          GqlTag`
+    const queryName = 'listTopTokens';
+    const networkFilter = await this.getNetworkFilters(networkId);
+    return await this.client
+      .query<DefinedTopToken[]>(
+        queryName,
+        GqlTag`
           query ($networkFilter: [Int!], $limit: Int, $resolution: String) {
             ${queryName}(networkFilter: $networkFilter, limit: $limit, resolution: $resolution) {
               name
@@ -62,28 +58,37 @@ export class DefinedApiTokenClient {
               marketCap
             }
           }`,
-          {
-            networkFilter,
-            limit: 50,
-            resolution,
-          },
-        )
-        .then((res) => {
-          const uniqueItems = res.reduce((acc, currentItem) => {
-            if (!acc.has(currentItem.address)) {
-              acc.set(currentItem.address, currentItem);
-            }
+        {
+          networkFilter,
+          limit: 50,
+          resolution,
+        },
+      )
+      .then((res) => {
+        const uniqueItems = res.reduce((acc, currentItem) => {
+          if (!acc.has(currentItem.address)) {
+            acc.set(currentItem.address, currentItem);
+          }
 
-            return acc;
-          }, new Map());
+          return acc;
+        }, new Map());
 
-          return Array.from(uniqueItems.values());
-        });
-    });
+        return Array.from(uniqueItems.values());
+      });
+  }
+
+  async getTopTokensFromCache(
+    resolution: DefinedApiTimeResolution = '60',
+    networkId?: number,
+  ): Promise<DefinedTopToken[]> {
+    const cacheKey = CacheKeys.TOP_TOKEN(resolution, networkId);
+    return await this.redisClient.getOrSet(cacheKey, async () =>
+      this.getTopTokens(resolution, networkId),
+    );
   }
 
   async getTopTokensByMarketCap(resolution: DefinedApiTimeResolution = '60', networkId?: number) {
-    const cacheKey = 'getTopTokensByMarketCap' + CacheKeys.TOP_TOKEN[resolution] + `_${networkId}`;
+    const cacheKey = CacheKeys.TOP_TOKEN_BY_MARKETCAP(resolution, networkId);
     const existingData = await this.redisClient.get(cacheKey);
 
     if (existingData?.length && existingData.length > 0) {
@@ -92,16 +97,13 @@ export class DefinedApiTokenClient {
   }
 
   async getNewTokens(networkId?: number): Promise<DefinedNewToken[]> {
-    const cacheKey = `getNewTokens_${networkId}`;
+    const queryName = 'filterTokens';
+    const networkFilter = await this.getNetworkFilters(networkId);
 
-    return this.redisClient.getOrSet(cacheKey, async () => {
-      const queryName = 'filterTokens';
-      const networkFilter = await this.getNetworkFilters(networkId);
-
-      return this.client
-        .query<DefinedNewTokenResult>(
-          queryName,
-          GqlTag`
+    return await this.client
+      .query<DefinedNewTokenResult>(
+        queryName,
+        GqlTag`
           query ($networkFilter: [Int!], $limit: Int) {
             ${queryName} (
               filters: {
@@ -153,23 +155,27 @@ export class DefinedApiTokenClient {
               }
             }
           }`,
-          {
-            networkFilter,
-            limit: 50,
-          },
-        )
-        .then((res) => {
-          const { results } = res;
-          const uniqueItems = results.reduce((acc, currentItem) => {
-            if (!acc.has(currentItem.token.address)) {
-              acc.set(currentItem.token.address, currentItem);
-            }
+        {
+          networkFilter,
+          limit: 50,
+        },
+      )
+      .then((res) => {
+        const { results } = res;
+        const uniqueItems = results.reduce((acc, currentItem) => {
+          if (!acc.has(currentItem.token.address)) {
+            acc.set(currentItem.token.address, currentItem);
+          }
 
-            return acc;
-          }, new Map());
+          return acc;
+        }, new Map());
 
-          return Array.from(uniqueItems.values());
-        });
-    });
+        return Array.from(uniqueItems.values());
+      });
+  }
+
+  async getNewTokensFromCache(networkId?: number): Promise<DefinedNewToken[]> {
+    const cacheKey = CacheKeys.NEW_TOKEN(networkId);
+    return await this.redisClient.getOrSet(cacheKey, async () => this.getNewTokens(networkId));
   }
 }
