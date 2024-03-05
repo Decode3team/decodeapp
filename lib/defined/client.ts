@@ -1,6 +1,5 @@
 import { DefinedApiResponse } from '@/lib/defined/types';
 import { GraphQLClient, gql as GqlTag } from 'graphql-request';
-
 class DefinedApiClient {
   private static instance: DefinedApiClient;
   private client: GraphQLClient;

@@ -1,41 +1,44 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { DefinedApiTimeResolution } from '@/lib/defined/types';
-import { serverClient } from './_trpc/server-client';
 import Dashboard from './components/dashboard';
 import { DefinedTopToken } from '@/lib/defined/schema/defined-top-token.schema';
 import { DefinedNewToken } from '@/lib/defined/schema/defined-new-token.schema';
+import { trpc } from '@/lib/utils/trpc';
 
 type InitialDataType = 'trending' | 'new';
 
 const initialTab = 'trending';
 
-export default async function Home({
+export default function Home({
   searchParams,
 }: Readonly<{
   searchParams: { [key: string]: string | undefined };
 }>) {
   const { id, resolution, tab } = searchParams;
-  const networkId = Number(id) || 0;
+  const networkId = Number(id) || 1;
   const activeTab = (tab as InitialDataType) ?? initialTab;
   const activeResolution = (resolution as DefinedApiTimeResolution) ?? '1D';
+  const [trendingData, setTrendingData] = useState<DefinedTopToken[]>([]);
+  const [newTokenData, setNewTokenData] = useState<DefinedNewToken[]>([]);
 
-  let trendingData: DefinedTopToken[] = [];
-  let newTokenData: DefinedNewToken[] = [];
+  trpc.tokens.getTopTokens.useSubscription({ 
+    resolution: activeResolution,
+    networkId
+  }, { 
+    onData(data) {
+      setTrendingData(data);
+    }
+  });
 
-  const intialData = {
-    trending: async () => {
-      trendingData = await serverClient['top-tokens']({
-        resolution: activeResolution,
-        networkId,
-      });
-    },
-    new: async () => {
-      newTokenData = await serverClient['new-tokens']({
-        networkId,
-      });
-    },
-  };
-
-  intialData[activeTab] && (await intialData[activeTab]());
+  trpc.tokens.getNewTokens.useSubscription({ 
+    networkId
+  }, { 
+    onData(data) {
+      setNewTokenData(data);
+    }
+  });
 
   return (
     <div className="flex w-full flex-col gap-4">

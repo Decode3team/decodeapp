@@ -1,13 +1,13 @@
-import { fetchRequestHandler } from '@trpc/server/adapters/fetch';
+import { AppRouter, appRouter } from '@/server/routers';
+import * as trpcNext from '@trpc/server/adapters/next';
+import { createContext } from 'server/context';
 
-import { appRouter } from '@/server';
-
-const handler = (req: Request) =>
-  fetchRequestHandler({
-    endpoint: 'api/trpc',
-    req,
-    router: appRouter,
-    createContext: () => ({}),
-  });
-
-export { handler as GET, handler as POST };
+export default trpcNext.createNextApiHandler<AppRouter>({
+  router: appRouter,
+  createContext,
+  onError({ error }) {
+    if (error.code === 'INTERNAL_SERVER_ERROR') {
+      console.error('Something went wrong', error);
+    }
+  },
+});
