@@ -57,7 +57,6 @@ const job = new CronJob(
 
     timeResolutionToSync.forEach(async (r) => {
       const resolution: DefinedApiTimeResolution = r;
-
       networks.forEach((n) => {
         connectionPool.push(async () => {
           const topTokenCacheKey = CacheKeys.TOP_TOKEN(resolution, n.id);
@@ -72,22 +71,26 @@ const job = new CronJob(
           await redisPublisherClient.publish(topTokenEventName, topTokenJson);
           //console.log(`Publising event "${topTokenEventName}"`);
 
-          await delay(1000);
-
-          const newTokenCacheKey = CacheKeys.NEW_TOKEN(n.id);
-          const dataForNewToken = await tokenClient.getNewTokens(n.id);
-
-          //console.log('Syncing NEW_TOKEN data for:', { id: n.id, name: n.name });
-          const newTokenJson = JSON.stringify(dataForNewToken);
-
-          await redisClient.set(newTokenCacheKey, topTokenJson, TimeResolution[15]);
-          const newTokenEventName = `new-tkn-updated:${resolution}:ntrwkId:${n.id}`;
-
-          await redisPublisherClient.publish(newTokenEventName, newTokenJson);
-          //console.log(`Publising event "${newTokenEventName}"`);
-
           await delay(processBatchDelayInMs);
         });
+      });
+    });
+
+    networks.forEach((n) => {
+      connectionPool.push(async () => {
+        const newTokenCacheKey = CacheKeys.NEW_TOKEN(n.id);
+        const dataForNewToken = await tokenClient.getNewTokens(n.id);
+
+        //console.log('Syncing NEW_TOKEN data for:', { id: n.id, name: n.name });
+        const newTokenJson = JSON.stringify(dataForNewToken);
+
+        await redisClient.set(newTokenCacheKey, newTokenJson, TimeResolution[15]);
+        const newTokenEventName = `new-tkn-updated:ntrwkId:${n.id}`;
+
+        await redisPublisherClient.publish(newTokenEventName, newTokenJson);
+        //console.log(`Publising event "${newTokenEventName}"`);
+
+        await delay(processBatchDelayInMs);
       });
     });
 
