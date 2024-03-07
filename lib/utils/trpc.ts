@@ -6,15 +6,6 @@ import type { inferRouterOutputs } from '@trpc/server';
 import superjson from 'superjson';
 import { httpApiHostUrl, wsApiHostUrl } from '../constants';
 
-const client = createWSClient({
-  url: `${wsApiHostUrl}/api/trpc`,
-});
-
-const wsClientLink = wsLink({
-  client,
-  transformer: superjson,
-});
-
 export const trpc = createTRPCNext<AppRouter>({
   ssr: true,
   ssrPrepass,
@@ -31,9 +22,15 @@ export const trpc = createTRPCNext<AppRouter>({
           condition: (operation) => {
             return operation.type === 'subscription';
           },
-          true: wsClientLink,
+          true: wsLink({
+            client: createWSClient({
+              url: `${wsApiHostUrl}/api/trpc`,
+            }),
+            transformer: superjson,
+          }),
           false: httpLink({
             url: `${httpApiHostUrl}/api/trpc`,
+            transformer: superjson,
           }),
         }),
       ],
