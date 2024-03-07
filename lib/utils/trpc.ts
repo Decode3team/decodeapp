@@ -37,7 +37,8 @@ export const trpc = createTRPCNext<AppRouter>({
           }),
         }),
       ],
-      queryClientConfig: { defaultOptions: { queries: { staleTime: 60000 } } },
+      // SET DATA TO NEVER GET STALE
+      //queryClientConfig: { defaultOptions: { queries: { staleTime: 60000 } } },
     };
   },
   transformer: superjson,
