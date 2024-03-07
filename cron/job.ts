@@ -1,4 +1,4 @@
-import fs from 'fs';
+//import fs from 'fs';
 import { CronJob } from 'cron';
 import RedisManager from '@/lib/redis/manager';
 import { CacheKeys, TimeResolution } from '@/lib/constants';
@@ -8,7 +8,7 @@ import { DefinedApiTokenClient } from '@/lib/defined/clients/token-client';
 import { DefinedApiTimeResolution } from '@/lib/defined/types';
 import { Stopwatch } from './stopwatch';
 
-const jobLockFilePath = './cron/job.lock';
+//const jobLockFilePath = './cron/job.lock';
 const timerExpr = process.env.CRON_JOB_EXPR ?? '*/5 * * * *'; // 5 minutes
 
 const redisManager = RedisManager.getInstance();
@@ -35,7 +35,7 @@ const job = new CronJob(
 
     const processBatchSize = 5;
     const processBatchDelayInMs = 2500;
-    const connectionPool: Array<() => Promise<void>> = [];
+    const connectionPool: (() => Promise<void>)[] = [];
     const timeResolutionToSync: DefinedApiTimeResolution[] = ['60', '240', '720', '1D'];
     const networks = await networkClient.getNetworksFromCache();
 
@@ -49,6 +49,7 @@ const job = new CronJob(
       while (connectionPool.length > 0) {
         const batch = connectionPool.splice(0, processBatchSize);
         const batchResults = await Promise.all(batch.map((promise) => promise()));
+
         results.push(...batchResults);
       }
 
@@ -57,6 +58,7 @@ const job = new CronJob(
 
     timeResolutionToSync.forEach(async (r) => {
       const resolution: DefinedApiTimeResolution = r;
+
       networks.forEach((n) => {
         connectionPool.push(async () => {
           const topTokenCacheKey = CacheKeys.TOP_TOKEN(resolution, n.id);

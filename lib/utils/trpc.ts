@@ -1,38 +1,19 @@
 import { AppRouter } from '@/server/routers';
-import type { TRPCLink } from '@trpc/client';
-import { createWSClient, httpBatchLink, loggerLink, wsLink } from '@trpc/client';
+import { createWSClient, httpLink, loggerLink, splitLink, wsLink } from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
 import { ssrPrepass } from '@trpc/next/ssrPrepass';
 import type { inferRouterOutputs } from '@trpc/server';
-import type { NextPageContext } from 'next';
 import superjson from 'superjson';
-import { hostUrl, wssHostUrl } from '../constants';
+import { httpApiHostUrl, wsApiHostUrl } from '../constants';
 
-function getEndingLink(ctx: NextPageContext | undefined): TRPCLink<AppRouter> {
-  if (typeof window === 'undefined') {
-    return httpBatchLink({
-      transformer: superjson,
-      url: `${hostUrl}/api/trpc`,
-      headers() {
-        if (!ctx?.req?.headers) {
-          return {};
-        }
-        return {
-          ...ctx.req.headers,
-          'x-ssr': '1',
-        };
-      },
-    });
-  }
-  const client = createWSClient({
-    url: wssHostUrl,
-  });
+const client = createWSClient({
+  url: `${wsApiHostUrl}/api/trpc`,
+});
 
-  return wsLink({
-    client,
-    transformer: superjson,
-  });
-}
+const wsClientLink = wsLink({
+  client,
+  transformer: superjson,
+});
 
 export const trpc = createTRPCNext<AppRouter>({
   ssr: true,
@@ -46,9 +27,17 @@ export const trpc = createTRPCNext<AppRouter>({
             (process.env.NODE_ENV === 'development' && typeof window !== 'undefined') ||
             (opts.direction === 'down' && opts.result instanceof Error),
         }),
-        getEndingLink(ctx),
+        splitLink({
+          condition: (operation) => {
+            return operation.type === 'subscription';
+          },
+          true: wsClientLink,
+          false: httpLink({
+            url: `${httpApiHostUrl}/api/trpc`,
+          }),
+        }),
       ],
-      queryClientConfig: { defaultOptions: { queries: { staleTime: 60 } } },
+      queryClientConfig: { defaultOptions: { queries: { staleTime: 60000 } } },
     };
   },
   transformer: superjson,

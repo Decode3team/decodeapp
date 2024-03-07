@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { DefinedApiTimeResolution } from '@/lib/defined/types';
 import Dashboard from './components/dashboard';
 import { DefinedTopToken } from '@/lib/defined/schema/defined-top-token.schema';
@@ -23,22 +23,28 @@ export default function Home({
   const [trendingData, setTrendingData] = useState<DefinedTopToken[]>([]);
   const [newTokenData, setNewTokenData] = useState<DefinedNewToken[]>([]);
 
-  trpc.tokens.getTopTokens.useSubscription({ 
-    resolution: activeResolution,
-    networkId
-  }, { 
-    onData(data) {
-      setTrendingData(data);
-    }
-  });
+  trpc.tokens.getTopTokens.useSubscription(
+    {
+      resolution: activeResolution,
+      networkId,
+    },
+    {
+      onData(data) {
+        setTrendingData(data);
+      },
+    },
+  );
 
-  trpc.tokens.getNewTokens.useSubscription({ 
-    networkId
-  }, { 
-    onData(data) {
-      setNewTokenData(data);
-    }
-  });
+  trpc.tokens.getNewTokens.useSubscription(
+    {
+      networkId,
+    },
+    {
+      onData(data) {
+        setNewTokenData(data);
+      },
+    },
+  );
 
   return (
     <div className="flex w-full flex-col gap-4">

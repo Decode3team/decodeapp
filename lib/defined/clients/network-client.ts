@@ -1,4 +1,3 @@
-import RedisManager from '@/lib/redis/manager';
 import { CacheKeys, NetworkNames, TimeResolution } from '../../constants';
 import { BlockchainDataProvider } from '../../providers/blockchain-data-provider';
 import { DefinedApiClient, GqlTag } from '../client';

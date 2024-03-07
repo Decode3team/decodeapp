@@ -13,6 +13,9 @@ import MainSidebar from '@/components/main/main-sidebar';
 import { Card } from '@/components/ui/card';
 import NextTopLoader from 'nextjs-toploader';
 import { trpc } from '@/lib/utils/trpc';
+import { DefinedNetwork } from '@/lib/defined/schema/defined-network.schema';
+import { TRPCQueryReponse } from '@/server/types';
+import { useState } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -27,6 +30,8 @@ function RootLayout({
   children: React.ReactNode;
 }>) {
   //const collapsed = //cookies().get('react-layout:collapsed'); t
+  //const [networks, setNetworks] = useState<DefinedNetwork[]>([]);
+
   const defaultCollapsed = false; //collapsed ? JSON.parse(collapsed.value) : undefined;
   const mainNav = [
     {
@@ -61,17 +66,18 @@ function RootLayout({
     },
   ];
 
-  const networks = trpc.networks.getNetworks.useQuery().data ?? [];
+  //FIXME: FIGURE OUT HOW TO UNWRAP THE RESPONSE
+  const n = trpc.networks.getNetworks.useQuery().data as unknown as TRPCQueryReponse<
+    DefinedNetwork[]
+  >;
+
+  const networks = n?.json ?? [];
 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(inter.className, 'dark:bg-stone-950')} suppressHydrationWarning>
         <NextTopLoader showSpinner={false} color="#bff311" />
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <main className="flex flex-row min-h-screen relative">
             <MainSidebar
               collapsed={defaultCollapsed}
@@ -95,4 +101,4 @@ function RootLayout({
   );
 }
 
-export default trpc.withTRPC(RootLayout)
+export default trpc.withTRPC(RootLayout);

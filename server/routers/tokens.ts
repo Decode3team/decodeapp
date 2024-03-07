@@ -38,6 +38,7 @@ export const tokensRouter = router({
             if (message) {
               console.log(`Received message from event:${channel}`);
               const data = JSON.parse(message) as DefinedTopToken[];
+
               emit.next(data);
             }
           });

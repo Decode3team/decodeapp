@@ -1,7 +1,7 @@
 import { DefinedApiTimeResolution } from './defined/types';
 
-export const wssPort = process.env.NEXT_PUBLIC_HOST_WEBSOCKET_PORT
-  ? Number(process.env.NEXT_PUBLIC_HOST_WEBSOCKET_PORT)
+export const apiPort = process.env.PUBLIC_WEBSOCKET_HOST_PORT
+  ? Number(process.env.PUBLIC_WEBSOCKET_HOST_PORT)
   : 3001;
 
 export const hostPort = process.env.NEXT_PUBLIC_HOST_PORT
@@ -9,9 +9,10 @@ export const hostPort = process.env.NEXT_PUBLIC_HOST_PORT
   : 3000;
 
 export const hostDomain = process.env.NEXT_PUBLIC_HOST_DOMAIN ?? 'localhost';
-export const wssDomain = process.env.NEXT_PUBLIC_WEBSOCKET_DOMAIN ?? 'localhost';
+export const apiDomain = process.env.PUBLIC_API_HOST_DOMAIN ?? 'localhost';
 
-export const wssHostUrl = `ws://${wssDomain}:${wssPort}`;
+export const wsApiHostUrl = `ws://${apiDomain}:${apiPort}`;
+export const httpApiHostUrl = `http://${apiDomain}:${apiPort}`;
 export const hostUrl = `http://${hostDomain}:${hostPort}`;
 
 const getNetworkIdCacheKeyFragment = (networkId?: number) => {
@@ -21,6 +22,7 @@ const getNetworkIdCacheKeyFragment = (networkId?: number) => {
 
   return `:ntwrkId:${networkId}`;
 };
+
 export namespace CacheKeys {
   export const NETWORK_DATA = 'dfi_ntwk_data';
 
