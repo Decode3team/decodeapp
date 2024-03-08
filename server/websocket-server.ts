@@ -6,14 +6,14 @@ import { applyWSSHandler } from '@trpc/server/adapters/ws';
 import ws from 'ws';
 import { createContext } from './context';
 import { appRouter } from './routers';
-import { apiPort, hostUrl, wsApiHostUrl } from '@/lib/constants';
+import { apiPort, apiHostUrlPrefix, hostUrl, wsApiHostUrl } from '@/lib/constants';
 
 const app = express();
 
 app.use(cors({ origin: hostUrl }));
 
 app.use(
-  '/api/trpc',
+  apiHostUrlPrefix,
   createExpressMiddleware({
     router: appRouter,
     createContext,

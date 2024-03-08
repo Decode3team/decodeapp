@@ -14,6 +14,7 @@ export const apiDomain = process.env.PUBLIC_API_HOST_DOMAIN ?? 'localhost';
 export const wsApiHostUrl = `ws://${apiDomain}:${apiPort}`;
 export const httpApiHostUrl = `http://${apiDomain}:${apiPort}`;
 export const hostUrl = `http://${hostDomain}:${hostPort}`;
+export const apiHostUrlPrefix = '/api/trpc';
 
 const getNetworkIdCacheKeyFragment = (networkId?: number) => {
   if (!networkId) {

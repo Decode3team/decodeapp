@@ -14,8 +14,6 @@ import { Card } from '@/components/ui/card';
 import NextTopLoader from 'nextjs-toploader';
 import { trpc } from '@/lib/utils/trpc';
 import { DefinedNetwork } from '@/lib/defined/schema/defined-network.schema';
-import { TRPCQueryReponse } from '@/server/types';
-import { useState } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -66,12 +64,7 @@ function RootLayout({
     },
   ];
 
-  //FIXME: FIGURE OUT HOW TO UNWRAP THE RESPONSE
-  const n = trpc.networks.getNetworks.useQuery().data as unknown as TRPCQueryReponse<
-    DefinedNetwork[]
-  >;
-
-  const networks = n?.json ?? [];
+  const networks = trpc.networks.getNetworks.useQuery().data ?? [];
 
   return (
     <html lang="en" suppressHydrationWarning>

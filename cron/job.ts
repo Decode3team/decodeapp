@@ -78,23 +78,23 @@ const job = new CronJob(
       });
     });
 
-    networks.forEach((n) => {
-      connectionPool.push(async () => {
-        const newTokenCacheKey = CacheKeys.NEW_TOKEN(n.id);
-        const dataForNewToken = await tokenClient.getNewTokens(n.id);
+    // networks.forEach((n) => {
+    //   connectionPool.push(async () => {
+    //     const newTokenCacheKey = CacheKeys.NEW_TOKEN(n.id);
+    //     const dataForNewToken = await tokenClient.getNewTokens(n.id);
 
-        //console.log('Syncing NEW_TOKEN data for:', { id: n.id, name: n.name });
-        const newTokenJson = JSON.stringify(dataForNewToken);
+    //     //console.log('Syncing NEW_TOKEN data for:', { id: n.id, name: n.name });
+    //     const newTokenJson = JSON.stringify(dataForNewToken);
 
-        await redisClient.set(newTokenCacheKey, newTokenJson, TimeResolution[15]);
-        const newTokenEventName = `new-tkn-updated:ntrwkId:${n.id}`;
+    //     await redisClient.set(newTokenCacheKey, newTokenJson, TimeResolution[15]);
+    //     const newTokenEventName = `new-tkn-updated:ntrwkId:${n.id}`;
 
-        await redisPublisherClient.publish(newTokenEventName, newTokenJson);
-        //console.log(`Publising event "${newTokenEventName}"`);
+    //     await redisPublisherClient.publish(newTokenEventName, newTokenJson);
+    //     //console.log(`Publising event "${newTokenEventName}"`);
 
-        await delay(processBatchDelayInMs);
-      });
-    });
+    //     await delay(processBatchDelayInMs);
+    //   });
+    // });
 
     await processRequestsInBatches();
 

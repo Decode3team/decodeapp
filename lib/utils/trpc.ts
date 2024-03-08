@@ -4,13 +4,14 @@ import { createTRPCNext } from '@trpc/next';
 import { ssrPrepass } from '@trpc/next/ssrPrepass';
 import type { inferRouterOutputs } from '@trpc/server';
 import superjson from 'superjson';
-import { httpApiHostUrl, wsApiHostUrl } from '../constants';
+import { apiHostUrlPrefix, httpApiHostUrl, wsApiHostUrl } from '../constants';
 
 export const trpc = createTRPCNext<AppRouter>({
   ssr: true,
   ssrPrepass,
   config({ ctx }) {
     return {
+      abortOnUnmount: true,
       links: [
         // adds pretty logs to your console in development and logs errors in production
         loggerLink({
@@ -24,18 +25,26 @@ export const trpc = createTRPCNext<AppRouter>({
           },
           true: wsLink({
             client: createWSClient({
-              url: `${wsApiHostUrl}/api/trpc`,
+              url: `${wsApiHostUrl}${apiHostUrlPrefix}`,
+              retryDelayMs: () => 20000,
+              lazy: {
+                enabled: true,
+                closeMs: 10000,
+              },
             }),
             transformer: superjson,
           }),
           false: httpLink({
-            url: `${httpApiHostUrl}/api/trpc`,
+            url: `${httpApiHostUrl}${apiHostUrlPrefix}`,
             transformer: superjson,
           }),
         }),
       ],
-      // SET DATA TO NEVER GET STALE
-      //queryClientConfig: { defaultOptions: { queries: { staleTime: 60000 } } },
+      // Set queries to never get stale
+      // to prevent the client from polling data from the server
+      queryClientConfig: {
+        defaultOptions: { queries: { staleTime: Infinity } },
+      },
     };
   },
   transformer: superjson,
