@@ -13,6 +13,11 @@ class DefinedApiClient {
     });
   }
 
+  /**
+   * Get an instance of DefinedApiClient.
+   *
+   * @return {DefinedApiClient} the instance of DefinedApiClient
+   */
   public static getInstance(): DefinedApiClient {
     if (!DefinedApiClient.instance) {
       DefinedApiClient.instance = new DefinedApiClient();
@@ -21,6 +26,14 @@ class DefinedApiClient {
     return DefinedApiClient.instance;
   }
 
+  /**
+   * A function that asynchronously sends a GraphQL query and returns the result.
+   *
+   * @param {string} operationName - the name of the operation
+   * @param {string} query - the GraphQL query
+   * @param {Record<string, any>} variables - optional variables for the query
+   * @return {Promise<T>} a promise that resolves with the result of the query
+   */
   async query<T>(
     operationName: string,
     query: string,

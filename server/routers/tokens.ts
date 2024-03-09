@@ -8,13 +8,16 @@ import { observable } from '@trpc/server/observable';
 import { DefinedTopToken } from '@/lib/defined/schema/defined-top-token.schema';
 import RedisManager from '@/lib/redis/manager';
 import { DefinedNewToken } from '@/lib/defined/schema/defined-new-token.schema';
+import { DefinedWebsocketClient } from '@/lib/defined/websocket-client';
 
 const redisManager = RedisManager.getInstance();
 const redisClient = redisManager.getClient();
-const redisSubscriberClient = redisManager.getSubscriberClient().getClient();
+//const redisSubscriberClient = redisManager.getSubscriberClient().getClient();
 
 const apiClient = DefinedApiClient.getInstance();
 const tokenClient = new DefinedApiTokenClient(apiClient, redisClient);
+
+const websocketInstance = DefinedWebsocketClient.getInstance();
 
 export const tokensRouter = router({
   getTopTokens: publicProcedure
@@ -33,20 +36,34 @@ export const tokensRouter = router({
           emit.next(res);
         });
 
-        redisSubscriberClient.subscribe(eventName).then(() => {
-          redisSubscriberClient.on('message', (channel, message) => {
-            if (message) {
-              console.log(`Received message from event:${channel}`);
-              const data = JSON.parse(message) as DefinedTopToken[];
+        // redisSubscriberClient.subscribe(eventName).then(() => {
+        //   redisSubscriberClient.on('message', (channel, message) => {
+        //     if (message) {
+        //       console.log(`Received message from event:${channel}`);
+        //       const data = JSON.parse(message) as DefinedTopToken[];
 
-              emit.next(data);
-            }
-          });
+        const observerable = websocketInstance.observe<{ liquidity: number }>(
+          'onPairMetadataUpdated',
+          {
+            query: `subscription {
+              onPairMetadataUpdated(id: "0xeecb5db986c20a8c88d8332e7e252a9671565751:137") {
+                liquidity
+              }
+            }`,
+          },
+        );
+
+        const subscription = observerable.subscribe({
+          next: (data) => {
+            console.log(data);
+          },
         });
 
         return () => {
-          console.log(`Unsubscribing to event:${eventName}`);
-          redisSubscriberClient.unsubscribe(eventName);
+          // console.log(`Unsubscribing to event:${eventName}`);
+          // redisSubscriberClient.unsubscribe(eventName);
+          console.log('UNSUBSCRIBE');
+          subscription.unsubscribe();
         };
       });
     }),

@@ -8,11 +8,22 @@ export class DefinedApiNetworkClient {
   private client!: DefinedApiClient;
   private redisClient!: RedisClient;
 
+  /**
+   * Constructor for initializing the client and redis client.
+   *
+   * @param {DefinedApiClient} client - the defined API client
+   * @param {RedisClient} redisClient - the Redis client
+   */
   constructor(client: DefinedApiClient, redisClient: RedisClient) {
     this.client = client;
     this.redisClient = redisClient;
   }
 
+  /**
+   * Retrieves the networks from the client and filters them based on available blockchains.
+   *
+   * @return {DefinedNetwork[]} the filtered and mapped network data
+   */
   async getNetworks() {
     const queryName = 'getNetworks';
     const res = await this.client.query<DefinedNetwork[]>(
@@ -41,6 +52,11 @@ export class DefinedApiNetworkClient {
       });
   }
 
+  /**
+   * Retrieves networks from cache if available, otherwise fetches and caches them.
+   *
+   * @return {Promise<any>} The network data from cache or fetched from the source.
+   */
   async getNetworksFromCache() {
     return await this.redisClient.getOrSet(
       CacheKeys.NETWORK_DATA,

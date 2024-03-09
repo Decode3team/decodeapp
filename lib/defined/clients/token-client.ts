@@ -25,12 +25,20 @@ export class DefinedApiTokenClient {
     return networkFilter;
   }
 
+  /**
+   * Retrieves the top tokens based on the given resolution and network ID.
+   *
+   * @param {DefinedApiTimeResolution} resolution - The time resolution for the token data (default: '60')
+   * @param {number} networkId - The ID of the network (optional)
+   * @return {Promise<DefinedTopToken[]>} A promise that resolves to an array of DefinedTopToken objects
+   */
   async getTopTokens(
     resolution: DefinedApiTimeResolution = '60',
     networkId?: number,
   ): Promise<DefinedTopToken[]> {
     const queryName = 'listTopTokens';
     const networkFilter = await this.getNetworkFilters(networkId);
+
     return await this.client
       .query<DefinedTopToken[]>(
         queryName,
@@ -77,11 +85,19 @@ export class DefinedApiTokenClient {
       });
   }
 
+  /**
+   * Retrieve top tokens from cache for a given time resolution and network ID.
+   *
+   * @param {DefinedApiTimeResolution} resolution - the time resolution for token retrieval
+   * @param {number} [networkId] - optional network ID for token retrieval
+   * @return {Promise<DefinedTopToken[]>} the top tokens from cache
+   */
   async getTopTokensFromCache(
     resolution: DefinedApiTimeResolution = '60',
     networkId?: number,
   ): Promise<DefinedTopToken[]> {
     const cacheKey = CacheKeys.TOP_TOKEN(resolution, networkId);
+
     return await this.redisClient.getOrSet(cacheKey, async () =>
       this.getTopTokens(resolution, networkId),
     );
@@ -89,11 +105,9 @@ export class DefinedApiTokenClient {
 
   async getTopTokensByMarketCap(resolution: DefinedApiTimeResolution = '60', networkId?: number) {
     const cacheKey = CacheKeys.TOP_TOKEN_BY_MARKETCAP(resolution, networkId);
-    const existingData = await this.redisClient.get(cacheKey);
+    const existingData = await this.redisClient.get<DefinedTopToken[]>(cacheKey);
 
-    if (existingData?.length && existingData.length > 0) {
-      return JSON.parse(existingData) as DefinedTopToken[];
-    }
+    return existingData ?? [];
   }
 
   async getNewTokens(networkId?: number): Promise<DefinedNewToken[]> {
@@ -176,6 +190,7 @@ export class DefinedApiTokenClient {
 
   async getNewTokensFromCache(networkId?: number): Promise<DefinedNewToken[]> {
     const cacheKey = CacheKeys.NEW_TOKEN(networkId);
+
     return await this.redisClient.getOrSet(cacheKey, async () => this.getNewTokens(networkId));
   }
 }
