@@ -1,10 +1,10 @@
 import { createClient, Client, SubscribePayload } from 'graphql-ws';
-import { DefinedApiResponse } from './types';
+import { DefinedApiResponse } from '../types';
 import ws from 'ws';
 import ZenObservable from 'zen-observable';
 
-class DefinedWebsocketClient {
-  private static instance: DefinedWebsocketClient;
+class DefinedWebsocketApiClient {
+  private static instance: DefinedWebsocketApiClient;
   private client!: Client;
 
   private constructor() {
@@ -36,14 +36,14 @@ class DefinedWebsocketClient {
   /**
    * Returns an instance of DefinedWebsocketClient if it exists, otherwise creates and returns a new instance.
    *
-   * @return {DefinedWebsocketClient} The instance of DefinedWebsocketClient
+   * @return {DefinedWebsocketApiClient} The instance of DefinedWebsocketClient
    */
-  public static getInstance(): DefinedWebsocketClient {
-    if (!DefinedWebsocketClient.instance) {
-      DefinedWebsocketClient.instance = new DefinedWebsocketClient();
+  public static getInstance(): DefinedWebsocketApiClient {
+    if (!DefinedWebsocketApiClient.instance) {
+      DefinedWebsocketApiClient.instance = new DefinedWebsocketApiClient();
     }
 
-    return DefinedWebsocketClient.instance;
+    return DefinedWebsocketApiClient.instance;
   }
 
   /**
@@ -62,7 +62,7 @@ class DefinedWebsocketClient {
    * @param {SubscribePayload} payload - the payload for the subscription
    * @return {ZenObservable<T>} - observable object with the subscrition events
    */
-  public observe<T>(operationName: string, payload: SubscribePayload): ZenObservable<T> {
+  public createObservable<T>(operationName: string, payload: SubscribePayload): ZenObservable<T> {
     return new ZenObservable<T>((observer) => {
       this.client.subscribe<DefinedApiResponse<T>>(payload, {
         next: (data) => observer.next(data?.data?.[operationName] ?? ({} as T)),
@@ -73,4 +73,4 @@ class DefinedWebsocketClient {
   }
 }
 
-export { DefinedWebsocketClient };
+export { DefinedWebsocketApiClient };

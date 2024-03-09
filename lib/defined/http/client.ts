@@ -1,7 +1,7 @@
 import { DefinedApiResponse } from '@/lib/defined/types';
-import { GraphQLClient, gql as GqlTag } from 'graphql-request';
-class DefinedApiClient {
-  private static instance: DefinedApiClient;
+import { GraphQLClient } from 'graphql-request';
+class DefinedHttpApiClient {
+  private static instance: DefinedHttpApiClient;
   private client: GraphQLClient;
 
   private constructor() {
@@ -16,14 +16,14 @@ class DefinedApiClient {
   /**
    * Get an instance of DefinedApiClient.
    *
-   * @return {DefinedApiClient} the instance of DefinedApiClient
+   * @return {DefinedHttpApiClient} the instance of DefinedApiClient
    */
-  public static getInstance(): DefinedApiClient {
-    if (!DefinedApiClient.instance) {
-      DefinedApiClient.instance = new DefinedApiClient();
+  public static getInstance(): DefinedHttpApiClient {
+    if (!DefinedHttpApiClient.instance) {
+      DefinedHttpApiClient.instance = new DefinedHttpApiClient();
     }
 
-    return DefinedApiClient.instance;
+    return DefinedHttpApiClient.instance;
   }
 
   /**
@@ -49,4 +49,4 @@ class DefinedApiClient {
   }
 }
 
-export { GqlTag, DefinedApiClient };
+export { DefinedHttpApiClient };

@@ -1,20 +1,21 @@
-import { CacheKeys, NetworkNames, TimeResolution } from '../../constants';
-import { BlockchainDataProvider } from '../../providers/blockchain-data-provider';
-import { DefinedApiClient, GqlTag } from '../client';
-import { DefinedNetwork } from '../schema/defined-network.schema';
+import { CacheKeys, NetworkNames, TimeResolution } from '../../../constants';
+import { BlockchainDataProvider } from '../../../providers/blockchain-data-provider';
+import { DefinedHttpApiClient } from '../client';
+import { DefinedNetwork } from '../../schema/defined-network.schema';
 import { RedisClient } from '@/lib/redis/client';
+import { gql as GqlTag } from 'graphql-request';
 
-export class DefinedApiNetworkClient {
-  private client!: DefinedApiClient;
+export class DefinedHttpApiNetworkClient {
+  private client!: DefinedHttpApiClient;
   private redisClient!: RedisClient;
 
   /**
    * Constructor for initializing the client and redis client.
    *
-   * @param {DefinedApiClient} client - the defined API client
+   * @param {DefinedHttpApiClient} client - the defined API client
    * @param {RedisClient} redisClient - the Redis client
    */
-  constructor(client: DefinedApiClient, redisClient: RedisClient) {
+  constructor(client: DefinedHttpApiClient, redisClient: RedisClient) {
     this.client = client;
     this.redisClient = redisClient;
   }

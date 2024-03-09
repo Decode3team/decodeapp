@@ -1,22 +1,23 @@
-import { DefinedApiClient, GqlTag } from '../client';
-import { CacheKeys } from '../../constants';
-import { DefinedApiTimeResolution } from '../types';
-import { DefinedTopToken } from '../schema/defined-top-token.schema';
-import { DefinedNewToken, DefinedNewTokenResult } from '../schema/defined-new-token.schema';
-import { DefinedApiNetworkClient } from './network-client';
+import { DefinedHttpApiClient } from '../client';
+import { CacheKeys } from '../../../constants';
+import { DefinedApiTimeResolution } from '../../types';
+import { DefinedTopToken } from '../../schema/defined-top-token.schema';
+import { DefinedNewToken, DefinedNewTokenResult } from '../../schema/defined-new-token.schema';
+import { DefinedHttpApiNetworkClient } from './network-client';
 import { RedisClient } from '@/lib/redis/client';
+import { gql as GqlTag } from 'graphql-request';
 
-export class DefinedApiTokenClient {
-  private client!: DefinedApiClient;
+export class DefinedHttpApiTokenClient {
+  private client!: DefinedHttpApiClient;
   private redisClient!: RedisClient;
 
-  constructor(client: DefinedApiClient, redisClient: RedisClient) {
+  constructor(client: DefinedHttpApiClient, redisClient: RedisClient) {
     this.client = client;
     this.redisClient = redisClient;
   }
 
   private async getNetworkFilters(networkId?: number) {
-    const networkClient = new DefinedApiNetworkClient(this.client, this.redisClient);
+    const networkClient = new DefinedHttpApiNetworkClient(this.client, this.redisClient);
     const networks = await networkClient.getNetworksFromCache();
     const networkFilter = networks
       .filter((n) => (networkId ? n.id === networkId : true))
