@@ -35,13 +35,14 @@ export default function Home({
     },
   );
 
-  trpc.tokens.getNewTokens.useSubscription(
+  trpc.tokens.onPairMetadatUpdated.useSubscription(
     {
-      networkId,
+      tokenAddress: '0xeecb5db986c20a8c88d8332e7e252a9671565751',
+      networkId: 137,
     },
     {
       onData(data) {
-        setNewTokenData(data);
+        console.log('DATA FROM FRONTEND', data);
       },
     },
   );

@@ -1,20 +1,26 @@
 import { z } from 'zod';
-import { DefinedApiClient } from '@/lib/defined/client';
+
 import { router, publicProcedure } from '../trpc';
-import { DefinedApiTokenClient } from '@/lib/defined/clients/token-client';
-import { DefinedApiTimeResolution } from '@/lib/defined/types';
 import { ResolutionSchema } from '@/lib/zod-schema';
 import { observable } from '@trpc/server/observable';
 import { DefinedTopToken } from '@/lib/defined/schema/defined-top-token.schema';
 import RedisManager from '@/lib/redis/manager';
-import { DefinedNewToken } from '@/lib/defined/schema/defined-new-token.schema';
+import { DefinedHttpApiClient } from '@/lib/defined/http/client';
+import { DefinedHttpApiTokenClient } from '@/lib/defined/http/clients/token-client';
+import { DefinedApiTimeResolution } from '@/lib/defined/types';
+import { DefinedOnPairMetadataUpdated } from '@/lib/defined/schema/websocket/defined-onpairmetadataupdated-schema';
+import { DefinedWebsocketApiClient } from '@/lib/defined/websocket/client';
+import { DefinedWebsocketApiTokenClient } from '@/lib/defined/websocket/clients/token-client';
 
 const redisManager = RedisManager.getInstance();
 const redisClient = redisManager.getClient();
 const redisSubscriberClient = redisManager.getSubscriberClient().getClient();
 
-const apiClient = DefinedApiClient.getInstance();
-const tokenClient = new DefinedApiTokenClient(apiClient, redisClient);
+const httpClient = DefinedHttpApiClient.getInstance();
+const httpTokenClient = new DefinedHttpApiTokenClient(httpClient, redisClient);
+
+const websocketClient = DefinedWebsocketApiClient.getInstance();
+const wsTokenClient = new DefinedWebsocketApiTokenClient(websocketClient);
 
 export const tokensRouter = router({
   getTopTokens: publicProcedure
@@ -29,7 +35,7 @@ export const tokensRouter = router({
       const eventName = `top-tkn-updated:${resolution}:ntrwkId:${input.networkId}`;
 
       return observable<DefinedTopToken[]>((emit) => {
-        tokenClient.getTopTokensFromCache(resolution, input.networkId).then((res) => {
+        httpTokenClient.getTopTokensFromCache(resolution, input.networkId).then((res) => {
           emit.next(res);
         });
 
@@ -50,19 +56,26 @@ export const tokensRouter = router({
         };
       });
     }),
-  getNewTokens: publicProcedure
+  onPairMetadatUpdated: publicProcedure
     .input(
       z.object({
-        networkId: z.number().optional(),
+        tokenAddress: z.string(),
+        networkId: z.number(),
       }),
     )
-    .subscription(async ({ input }) => {
-      return observable<DefinedNewToken[]>((emit) => {
-        tokenClient.getNewTokensFromCache(input.networkId).then((res) => {
-          emit.next(res);
+    .subscription(({ input }) => {
+      return observable<DefinedOnPairMetadataUpdated>((emit) => {
+        const observer = wsTokenClient.onPairMetadataUpdated(input.tokenAddress, input.networkId);
+
+        const subscription = observer.subscribe({
+          next: (data) => {
+            emit.next(data);
+          },
         });
 
-        return () => {};
+        return () => {
+          subscription.unsubscribe();
+        };
       });
     }),
 });

@@ -2,9 +2,9 @@
 import { CronJob } from 'cron';
 import RedisManager from '@/lib/redis/manager';
 import { CacheKeys, TimeResolution } from '@/lib/constants';
-import { DefinedApiClient } from '@/lib/defined/client';
-import { DefinedApiNetworkClient } from '@/lib/defined/clients/network-client';
-import { DefinedApiTokenClient } from '@/lib/defined/clients/token-client';
+import { DefinedApiClient } from '@/lib/defined/http/client';
+import { DefinedApiNetworkClient } from '@/lib/defined/http/clients/network-client';
+import { DefinedApiTokenClient } from '@/lib/defined/http/clients/token-client';
 import { DefinedApiTimeResolution } from '@/lib/defined/types';
 import { Stopwatch } from './stopwatch';
 
