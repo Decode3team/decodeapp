@@ -7,7 +7,7 @@ import { DefinedTopToken } from '@/lib/defined/schema/defined-top-token.schema';
 import RedisManager from '@/lib/redis/manager';
 import { DefinedHttpApiClient } from '@/lib/defined/http/client';
 import { DefinedHttpApiTokenClient } from '@/lib/defined/http/clients/token-client';
-import { DefinedApiTimeResolution } from '@/lib/defined/types';
+import {DefinedApiTimeResolution, PairId} from '@/lib/defined/types';
 import { DefinedOnPairMetadataUpdated } from '@/lib/defined/schema/websocket/defined-onpairmetadataupdated-schema';
 import { DefinedWebsocketApiClient } from '@/lib/defined/websocket/client';
 import { DefinedWebsocketApiTokenClient } from '@/lib/defined/websocket/clients/token-client';
@@ -59,13 +59,13 @@ export const tokensRouter = router({
   onPairMetadatUpdated: publicProcedure
     .input(
       z.object({
-        tokenAddress: z.string(),
-        networkId: z.number(),
+        pairId: z.string(),
       }),
     )
     .subscription(({ input }) => {
       return observable<DefinedOnPairMetadataUpdated>((emit) => {
-        const observer = wsTokenClient.onPairMetadataUpdated(input.tokenAddress, input.networkId);
+        const pairId = input.pairId as PairId;
+        const observer = wsTokenClient.onPairMetadataUpdated(pairId);
 
         const subscription = observer.subscribe({
           next: (data) => {

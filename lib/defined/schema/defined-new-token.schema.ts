@@ -16,6 +16,9 @@ export const definedNewTokenSchema = z.object({
   volume4: z.string(),
   volume12: z.string(),
   volume24: z.string(),
+  pair: z.object({
+    id: z.string(),
+  }),
   token: z.object({
     name: z.string(),
     id: z.number(),

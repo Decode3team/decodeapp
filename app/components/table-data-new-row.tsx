@@ -9,8 +9,7 @@ import { trpc } from '@/lib/utils/trpc';
 function TableDataNewRow({ token }: { token: DefinedNewToken }) {
   trpc.tokens.onPairMetadatUpdated.useSubscription(
     {
-      tokenAddress: token.token.address,
-      networkId: token.token.networkId,
+      pairId: token.pair.id,
     },
     {
       onData(data) {
