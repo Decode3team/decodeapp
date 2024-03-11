@@ -22,19 +22,6 @@ function DashboardDataNew({
     resolution,
   });
 
-  // trpc.tokens.onPairMetadatUpdated.useSubscription(
-  //   {
-  //     tokenAddress: '0xeecb5db986c20a8c88d8332e7e252a9671565751',
-  //     networkId: 137,
-  //   },
-  //   {
-  //     onData(data) {
-  //       setData([]);
-  //       console.log('DATA FROM FRONTEND', data);
-  //     },
-  //   },
-  // );
-
   const handleDataSummaryChange = (data: DataSummary) => {
     setDataSummary({
       marketCap: data.marketCap,

@@ -1,9 +1,12 @@
-import { DefinedHttpApiClient } from '../client';
-import { CacheKeys } from '../../../constants';
-import { DefinedApiTimeResolution } from '../../types';
-import { DefinedTopToken } from '../../schema/defined-top-token.schema';
-import { DefinedNewToken, DefinedNewTokenResult } from '../../schema/defined-new-token.schema';
-import { DefinedHttpApiNetworkClient } from './network-client';
+import { DefinedHttpApiClient } from '@/lib/defined/http/client';
+import { CacheKeys } from '@/lib/constants';
+import { DefinedApiTimeResolution } from '@/lib/defined/types';
+import { DefinedTopToken } from '@/lib/defined/schema/defined-top-token.schema';
+import {
+  DefinedNewToken,
+  DefinedNewTokenResult,
+} from '@/lib/defined/schema/defined-new-token.schema';
+import { DefinedHttpApiNetworkClient } from '@/lib/defined/http/clients/network-client';
 import { RedisClient } from '@/lib/redis/client';
 import { gql as GqlTag } from 'graphql-request';
 import { DefinedLatestToken } from '../../schema/defined-latest-token.schema';
@@ -20,11 +23,7 @@ export class DefinedHttpApiTokenClient {
   private async getNetworkFilters(networkId?: number) {
     const networkClient = new DefinedHttpApiNetworkClient(this.client, this.redisClient);
     const networks = await networkClient.getNetworksFromCache();
-    const networkFilter = networks
-      .filter((n) => (networkId ? n.id === networkId : true))
-      .map((n) => n.id);
-
-    return networkFilter;
+    return networks.filter((n) => (networkId ? n.id === networkId : true)).map((n) => n.id);
   }
 
   /**
@@ -156,7 +155,10 @@ export class DefinedHttpApiTokenClient {
                 volume1,
                 volume4,
                 volume12,
-                volume24
+                volume24,
+                pair {
+                  id
+                },
                 token {
                   name,
                   id,
@@ -212,5 +214,11 @@ export class DefinedHttpApiTokenClient {
 
         return Array.from(uniqueItems.values());
       });
+  }
+
+  async getNewTokensFromCache(networkId?: number): Promise<DefinedNewToken[]> {
+    const cacheKey = CacheKeys.NEW_TOKEN(networkId);
+
+    return await this.redisClient.getOrSet(cacheKey, async () => this.getNewTokens(networkId));
   }
 }

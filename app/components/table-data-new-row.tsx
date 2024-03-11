@@ -32,9 +32,8 @@ function TableDataNewRow({ initialData }: { initialData: DefinedNewToken }) {
     if (updated) {
       const timer = setTimeout(() => {
         setUpdated(false);
-      }, 3000); // Reset updated to false after 3 seconds
+      }, 4000);
 
-      // Cleanup function to clear the timer
       return () => clearTimeout(timer);
     }
   }, [updated]);

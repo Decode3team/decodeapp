@@ -11,14 +11,10 @@ export class DefinedWebsocketApiTokenClient {
     this.client = client;
   }
 
-  public onPairMetadataUpdated(
-    tokenAddress: string,
-    networkId: number,
-  ): ZenObservable<DefinedOnPairMetadataUpdated> {
+  public onPairMetadataUpdated(pairId: PairId): ZenObservable<DefinedOnPairMetadataUpdated> {
     const operationName = 'onPairMetadataUpdated';
-    const pairId: PairId = `${tokenAddress}:${networkId}`;
 
-    const observer = this.client.createObservable<DefinedOnPairMetadataUpdated>(operationName, {
+    return this.client.createObservable<DefinedOnPairMetadataUpdated>(operationName, {
       query: `subscription OnPairMetadataUpdated($id: String) {
                 ${operationName}(id: $id) {
                     id
@@ -62,8 +58,6 @@ export class DefinedWebsocketApiTokenClient {
         id: pairId,
       },
     });
-
-    return observer;
   }
 
   public onPriceUpdated(tokenAddress: string, networkId: number) {
