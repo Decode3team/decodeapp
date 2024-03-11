@@ -2,6 +2,7 @@ import ZenObservable from 'zen-observable';
 import { DefinedOnPairMetadataUpdated } from '../../schema/websocket/defined-onpairmetadataupdated-schema';
 import { PairId } from '../../types';
 import { DefinedWebsocketApiClient } from '../client';
+import { DefinedOnPriceUpdate } from '../../schema/websocket/defined-on-price-updated.schema';
 
 export class DefinedWebsocketApiTokenClient {
   private client!: DefinedWebsocketApiClient;
@@ -63,5 +64,23 @@ export class DefinedWebsocketApiTokenClient {
     });
 
     return observer;
+  }
+
+  public onPriceUpdated(tokenAddress: string, networkId: number) {
+    const operationName = 'onPriceUpdated';
+
+    return this.client.createObservable<DefinedOnPriceUpdate>(operationName, {
+      query: `subscription OnPriceUpdated($tokenAddress: String, $networkId: Int) {
+          ${operationName}(address: $tokenAddress, networkId: $networkId) {
+            priceUsd
+            timestamp
+          }
+        }
+      `,
+      variables: {
+        tokenAddress,
+        networkId,
+      },
+    });
   }
 }

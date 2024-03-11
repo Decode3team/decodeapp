@@ -11,6 +11,7 @@ import { DefinedApiTimeResolution } from '@/lib/defined/types';
 import { DefinedOnPairMetadataUpdated } from '@/lib/defined/schema/websocket/defined-onpairmetadataupdated-schema';
 import { DefinedWebsocketApiClient } from '@/lib/defined/websocket/client';
 import { DefinedWebsocketApiTokenClient } from '@/lib/defined/websocket/clients/token-client';
+import { DefinedOnPriceUpdate } from '@/lib/defined/schema/websocket/defined-on-price-updated.schema';
 
 const redisManager = RedisManager.getInstance();
 const redisClient = redisManager.getClient();
@@ -66,6 +67,28 @@ export const tokensRouter = router({
     .subscription(({ input }) => {
       return observable<DefinedOnPairMetadataUpdated>((emit) => {
         const observer = wsTokenClient.onPairMetadataUpdated(input.tokenAddress, input.networkId);
+
+        const subscription = observer.subscribe({
+          next: (data) => {
+            emit.next(data);
+          },
+        });
+
+        return () => {
+          subscription.unsubscribe();
+        };
+      });
+    }),
+  onPriceUpdated: publicProcedure
+    .input(
+      z.object({
+        tokenAddress: z.string(),
+        networkId: z.number(),
+      }),
+    )
+    .subscription(({ input }) => {
+      return observable<DefinedOnPriceUpdate>((emit) => {
+        const observer = wsTokenClient.onPriceUpdated(input.tokenAddress, input.networkId);
 
         const subscription = observer.subscribe({
           next: (data) => {

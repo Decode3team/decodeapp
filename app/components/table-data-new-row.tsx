@@ -5,22 +5,44 @@ import { TableCell, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { trpc } from '@/lib/utils/trpc';
+import { useEffect, useState } from 'react';
 
-function TableDataNewRow({ token }: { token: DefinedNewToken }) {
-  trpc.tokens.onPairMetadatUpdated.useSubscription(
+function TableDataNewRow({ initialData }: { initialData: DefinedNewToken }) {
+  const [token, setToken] = useState<DefinedNewToken>(initialData);
+  const [updated, setUpdated] = useState(false);
+
+  trpc.tokens.onPriceUpdated.useSubscription(
     {
       tokenAddress: token.token.address,
       networkId: token.token.networkId,
     },
     {
       onData(data) {
-        console.log('DATA FROM FRONTEND >>>>', data);
+        console.log('DATA FROM FRONTEND', data);
+        setToken({
+          ...token,
+          priceUSD: data.priceUsd,
+        });
+        setUpdated(true);
       },
     },
   );
 
+  useEffect(() => {
+    if (updated) {
+      const timer = setTimeout(() => {
+        setUpdated(false);
+      }, 3000); // Reset updated to false after 3 seconds
+
+      // Cleanup function to clear the timer
+      return () => clearTimeout(timer);
+    }
+  }, [updated]);
+
   return (
-    <TableRow key={token.token.id}>
+    <TableRow
+      key={token.token.id}
+      className={`${updated ? 'dark:bg-stone-800' : 'dark:bg-stone-950'} transition-colors duration-300`}>
       <TableCell className="sticky left-0 dark:bg-stone-950">
         <div className="flex items-center gap-2">
           <Avatar className="w-[32px] h-[32px]">

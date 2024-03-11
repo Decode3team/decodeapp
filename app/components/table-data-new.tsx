@@ -104,7 +104,8 @@ function TableDataNew({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {hasData && data.map((token) => <TableDataNewRow key={token.token.id} token={token} />)}
+            {hasData &&
+              data.map((token) => <TableDataNewRow key={token.token.id} initialData={token} />)}
             {!hasData && (
               <TableRow>
                 <TableCell colSpan={12} className="h-15">

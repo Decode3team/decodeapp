@@ -6,6 +6,7 @@ import { DefinedNewToken, DefinedNewTokenResult } from '../../schema/defined-new
 import { DefinedHttpApiNetworkClient } from './network-client';
 import { RedisClient } from '@/lib/redis/client';
 import { gql as GqlTag } from 'graphql-request';
+import { DefinedLatestToken } from '../../schema/defined-latest-token.schema';
 
 export class DefinedHttpApiTokenClient {
   private client!: DefinedHttpApiClient;
@@ -190,9 +191,26 @@ export class DefinedHttpApiTokenClient {
       });
   }
 
-  async getNewTokensFromCache(networkId?: number): Promise<DefinedNewToken[]> {
-    const cacheKey = CacheKeys.NEW_TOKEN(networkId);
+  async getLatestTokens(networkId?: number) {
+    const queryName = 'getLatestTokens';
+    const networkFilter = await this.getNetworkFilters(networkId);
 
-    return await this.redisClient.getOrSet(cacheKey, async () => this.getNewTokens(networkId));
+    return await this.client
+      .query<{ items: DefinedLatestToken[] }>(queryName, GqlTag``, {
+        networkFilter,
+        limit: 50,
+      })
+      .then((res) => {
+        const { items: results } = res;
+        const uniqueItems = results.reduce((acc, currentItem) => {
+          if (!acc.has(currentItem.id)) {
+            acc.set(currentItem.id, currentItem);
+          }
+
+          return acc;
+        }, new Map());
+
+        return Array.from(uniqueItems.values());
+      });
   }
 }
