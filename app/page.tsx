@@ -1,15 +1,8 @@
-'use client';
-
-import { useState } from 'react';
 import { DefinedApiTimeResolution } from '@/lib/defined/types';
-import Dashboard from './components/dashboard';
-import { DefinedTopToken } from '@/lib/defined/schema/defined-top-token.schema';
-import { DefinedNewToken } from '@/lib/defined/schema/defined-new-token.schema';
-import { trpc } from '@/lib/utils/trpc';
+import DashboardDataTrending from './components/dashboard-data-trending';
+import DashboardDataNew from './components/dashboard-data-new';
 
 type InitialDataType = 'trending' | 'new';
-
-const initialTab = 'trending';
 
 export default function Home({
   searchParams,
@@ -18,44 +11,18 @@ export default function Home({
 }>) {
   const { id, resolution, tab } = searchParams;
   const networkId = Number(id) || 1;
-  const activeTab = (tab as InitialDataType) ?? initialTab;
+  const activeTab = (tab as InitialDataType) ?? 'trending';
   const activeResolution = (resolution as DefinedApiTimeResolution) ?? '1D';
-  const [trendingData, setTrendingData] = useState<DefinedTopToken[]>([]);
-  const [newTokenData, setNewTokenData] = useState<DefinedNewToken[]>([]);
-
-  trpc.tokens.getTopTokens.useSubscription(
-    {
-      resolution: activeResolution,
-      networkId,
-    },
-    {
-      onData(data) {
-        setTrendingData(data);
-      },
-    },
-  );
-
-  trpc.tokens.onPairMetadatUpdated.useSubscription(
-    {
-      tokenAddress: '0xeecb5db986c20a8c88d8332e7e252a9671565751',
-      networkId: 137,
-    },
-    {
-      onData(data) {
-        console.log('DATA FROM FRONTEND', data);
-      },
-    },
-  );
 
   return (
     <div className="flex w-full flex-col gap-4">
-      <Dashboard
-        key={activeTab}
-        resolution={activeResolution}
-        initialTab={activeTab}
-        trendingData={trendingData}
-        newTokenData={newTokenData}
-      />
+      {activeTab === 'trending' && (
+        <DashboardDataTrending resolution={activeResolution} networkId={networkId} />
+      )}
+
+      {activeTab === 'new' && (
+        <DashboardDataNew resolution={activeResolution} networkId={networkId} />
+      )}
     </div>
   );
 }

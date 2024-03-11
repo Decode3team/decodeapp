@@ -160,7 +160,8 @@ export class DefinedHttpApiTokenClient {
                   name,
                   id,
                   address,
-                  symbol
+                  symbol,
+                  networkId,
                   info {
                     imageLargeUrl,
                     imageSmallUrl

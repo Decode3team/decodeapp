@@ -12,18 +12,17 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ArrowRightLeft, Tag } from 'lucide-react';
 import { useEffect } from 'react';
-import { DataSummary } from './dashboard';
 import { DefinedTopToken } from '@/lib/defined/schema/defined-top-token.schema';
+import { DataSummary } from './dashboard-summary';
 
 function TableDataTrending({
-  initialData,
-  dataSummary,
+  data,
+  onDataSummary,
 }: Readonly<{
-  initialData?: DefinedTopToken[];
-  dataSummary: (data: DataSummary) => void;
+  data: DefinedTopToken[];
+  onDataSummary: (data: DataSummary) => void;
 }>) {
-  const data = initialData;
-  const hasData = data && data.length > 0;
+  const hasData = data.length > 0;
 
   useEffect(() => {
     if (data?.length) {
@@ -38,7 +37,7 @@ function TableDataTrending({
         { marketCap: 0, volume: 0, transaction: 0 },
       );
 
-      dataSummary({ marketCap, volume, transaction });
+      onDataSummary({ marketCap, volume, transaction });
     }
   }, [data]);
 

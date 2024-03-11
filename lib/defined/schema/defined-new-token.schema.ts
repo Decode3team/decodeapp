@@ -21,10 +21,11 @@ export const definedNewTokenSchema = z.object({
     id: z.number(),
     address: z.string(),
     symbol: z.string(),
+    networkId: z.number(),
     info: z.object({
-      imageLargeUrl: z.string().optional(),
-      imageSmallUrl: z.string().optional(),
-      imageThumbUrl: z.string().optional(),
+      imageLargeUrl: z.string().or(z.null()),
+      imageSmallUrl: z.string().or(z.null()),
+      imageThumbUrl: z.string().or(z.null()),
     }),
   }),
 });

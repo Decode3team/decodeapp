@@ -78,4 +78,15 @@ export const tokensRouter = router({
         };
       });
     }),
+
+  getNewTokes: publicProcedure
+    .input(
+      z.object({
+        resolution: ResolutionSchema,
+        networkId: z.number().optional(),
+      }),
+    )
+    .query(async ({ input }) => {
+      return await httpTokenClient.getNewTokens(input.networkId);
+    }),
 });
