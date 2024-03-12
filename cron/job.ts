@@ -2,9 +2,9 @@
 import { CronJob } from 'cron';
 import RedisManager from '@/lib/redis/manager';
 import { CacheKeys, TimeResolution } from '@/lib/constants';
-import { DefinedApiClient } from '@/lib/defined/http/client';
-import { DefinedApiNetworkClient } from '@/lib/defined/http/clients/network-client';
-import { DefinedApiTokenClient } from '@/lib/defined/http/clients/token-client';
+import { DefinedHttpApiClient } from '@/lib/defined/http/client';
+import { DefinedHttpApiNetworkClient } from '@/lib/defined/http/clients/network-client';
+import { DefinedHttpApiTokenClient } from '@/lib/defined/http/clients/token-client';
 import { DefinedApiTimeResolution } from '@/lib/defined/types';
 import { Stopwatch } from './stopwatch';
 
@@ -15,9 +15,9 @@ const redisManager = RedisManager.getInstance();
 const redisClient = redisManager.getClient();
 const redisPublisherClient = redisManager.getPublisherClient().getClient();
 
-const apiClient = DefinedApiClient.getInstance();
-const networkClient = new DefinedApiNetworkClient(apiClient, redisClient);
-const tokenClient = new DefinedApiTokenClient(apiClient, redisClient);
+const apiClient = DefinedHttpApiClient.getInstance();
+const networkClient = new DefinedHttpApiNetworkClient(apiClient, redisClient);
+const tokenClient = new DefinedHttpApiTokenClient(apiClient, redisClient);
 const stopwatch = new Stopwatch();
 
 console.log('Running job...');

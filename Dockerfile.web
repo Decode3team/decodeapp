@@ -5,3 +5,5 @@ COPY . /app
 WORKDIR /app
 
 RUN npm install
+
+EXPOSE 3000 8080 80 3001
