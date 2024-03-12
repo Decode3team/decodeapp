@@ -10,7 +10,7 @@
     "kill": "concurrently -k",
     "dev:azure:client": "next dev",
     "dev:azurewss": "dotenv -e .env tsx ./server/websocket-server.ts --tsconfig tsconfig.server.json",
-    "dev:azure": "concurrently \"npm run dev:client\" \"npm run dev:wss\" \"npm run dev:cron\"",
+    "dev:azure": "concurrently \"npm run dev:azure:client\" \"npm run dev:azure:wss\" \"npm run dev:azure:cron\"",
     "dev:azure:cron": "dotenv -e .env tsx ./cron/job.ts --tsconfig tsconfig.server.json",
     "build": "next build",
     "start": "next start",

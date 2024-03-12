@@ -7,3 +7,5 @@ WORKDIR /app
 RUN npm install
 
 EXPOSE 3000 8080 80 3001
+
+CMD ["npm", "run", "dev:azure"]
