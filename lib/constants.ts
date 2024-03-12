@@ -16,9 +16,9 @@ export const hostProtocol = process.env.NEXT_PUBLIC_HOST_PORT_PROTOCOL ?? 'https
 export const hostDomain = process.env.NEXT_PUBLIC_HOST_DOMAIN ?? 'decode-dev-as.azurewebsites.net';
 export const apiDomain = process.env.PUBLIC_API_HOST_DOMAIN ?? 'decode-dev-api-as.azurewebsites.net';
 
-export const wsApiHostUrl = `${wsApiProtocol}://${apiDomain}:${apiPort}`;
-export const httpApiHostUrl = `${httpApiProtocol}://${apiDomain}:${apiPort}`;
-export const hostUrl = `${hostProtocol}://${hostDomain}:${hostPort}`;
+export const wsApiHostUrl = `${wsApiProtocol}://${apiDomain}${apiPort === 80 ? '' : `:${apiPort}`}`;
+export const httpApiHostUrl = `${httpApiProtocol}://${apiDomain}${apiPort === 80 ? '' : `:${apiPort}`}`;
+export const hostUrl = `${hostProtocol}://${hostDomain}${hostPort === 80 ? '' : `:${hostPort}`}`;
 export const apiHostUrlPrefix = '/api/trpc';
 
 const getNetworkIdCacheKeyFragment = (networkId?: number) => {
