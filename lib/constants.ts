@@ -2,14 +2,14 @@ import { DefinedApiTimeResolution } from './defined/types';
 
 export const apiPort = process.env.PUBLIC_WEBSOCKET_HOST_PORT
   ? Number(process.env.PUBLIC_WEBSOCKET_HOST_PORT)
-  : 8080;
+  : 80;
 
 export const hostPort = process.env.NEXT_PUBLIC_HOST_PORT
   ? Number(process.env.NEXT_PUBLIC_HOST_PORT)
   : 80;
 
 export const hostDomain = process.env.NEXT_PUBLIC_HOST_DOMAIN ?? 'decode-dev-as.azurewebsites.net';
-export const apiDomain = process.env.PUBLIC_API_HOST_DOMAIN ?? 'decode-dev-as.azurewebsites.net';
+export const apiDomain = process.env.PUBLIC_API_HOST_DOMAIN ?? 'decode-dev-api-as.azurewebsites.net';
 
 export const wsApiHostUrl = `ws://${apiDomain}:${apiPort}`;
 export const httpApiHostUrl = `http://${apiDomain}:${apiPort}`;
