@@ -6,22 +6,32 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { trpc } from '@/lib/utils/trpc';
 import { useEffect, useState } from 'react';
+import { DefinedOnPairMetadataUpdated } from '@/lib/defined/schema/websocket/defined-onpairmetadataupdated-schema';
 
 function TableDataNewRow({ initialData }: { initialData: DefinedNewToken }) {
   const [token, setToken] = useState<DefinedNewToken>(initialData);
   const [updated, setUpdated] = useState(false);
 
-  trpc.tokens.onPriceUpdated.useSubscription(
+  trpc.tokens.onPairMetadatUpdated.useSubscription(
     {
-      tokenAddress: token.token.address,
-      networkId: token.token.networkId,
+      pairId: token.pair.id,
     },
     {
-      onData(data) {
-        console.log('DATA FROM FRONTEND', data);
+      onData(data: DefinedOnPairMetadataUpdated) {
         setToken({
           ...token,
-          priceUSD: data.priceUsd,
+          ...{
+            priceUSD: data.price,
+            liquidity: data.liquidity,
+            change1: data.priceChange1.toString(),
+            change4: data.priceChange4.toString(),
+            change12: data.priceChange12.toString(),
+            change24: data.priceChange24.toString(),
+            volume1: data.volume1,
+            volume4: data.volume4,
+            volume12: data.volume12,
+            volume24: data.volume24,
+          },
         });
         setUpdated(true);
       },
@@ -72,10 +82,6 @@ function TableDataNewRow({ initialData }: { initialData: DefinedNewToken }) {
       <TableCell>
         <LiveNumber num={Number(token.volume24)} format="0,0.00a" />
       </TableCell>
-      <TableCell>
-        <LiveNumber num={Number(token.uniqueTransactions24)} format="0,0.00a" />
-      </TableCell>
-
       <TableCell className="text-center">
         <LiveNumber num={Number(token.change1)} format="0,0.00%" live sign />
       </TableCell>

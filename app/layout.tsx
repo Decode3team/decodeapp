@@ -13,7 +13,6 @@ import MainSidebar from '@/components/main/main-sidebar';
 import { Card } from '@/components/ui/card';
 import NextTopLoader from 'nextjs-toploader';
 import { trpc } from '@/lib/utils/trpc';
-import { DefinedNetwork } from '@/lib/defined/schema/defined-network.schema';
 
 const inter = Inter({ subsets: ['latin'] });
 

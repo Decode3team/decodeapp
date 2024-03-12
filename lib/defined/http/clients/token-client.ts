@@ -23,6 +23,7 @@ export class DefinedHttpApiTokenClient {
   private async getNetworkFilters(networkId?: number) {
     const networkClient = new DefinedHttpApiNetworkClient(this.client, this.redisClient);
     const networks = await networkClient.getNetworksFromCache();
+
     return networks.filter((n) => (networkId ? n.id === networkId : true)).map((n) => n.id);
   }
 

@@ -15,6 +15,7 @@ class RedisManager {
     if (!RedisManager.instance) {
       RedisManager.instance = new RedisManager();
     }
+
     return RedisManager.instance;
   }
 
@@ -26,6 +27,7 @@ class RedisManager {
     if (!this.publisherClient) {
       this.publisherClient = new RedisClient();
     }
+
     return this.publisherClient;
   }
 
@@ -33,6 +35,7 @@ class RedisManager {
     if (!this.subscriberClient) {
       this.subscriberClient = new RedisClient();
     }
+
     return this.subscriberClient;
   }
 }

@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ArrowRightLeft, Tag } from 'lucide-react';
+import { Tag } from 'lucide-react';
 import { DataSummary } from './dashboard-summary';
 import TableDataNewRow from './table-data-new-row';
 
@@ -45,17 +45,17 @@ function TableDataNew({
               <TableHead className="md:sticky md:left-0 dark:bg-stone-950">Token</TableHead>
               <TableHead>Price</TableHead>
               <TableHead>Volume</TableHead>
-              <TableHead>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <div className="flex items-center gap-2">
-                      <ArrowRightLeft size={12} />
-                      Txn
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>Transaction count</TooltipContent>
-                </Tooltip>
-              </TableHead>
+              {/*<TableHead>*/}
+              {/*  <Tooltip>*/}
+              {/*    <TooltipTrigger>*/}
+              {/*      <div className="flex items-center gap-2">*/}
+              {/*        <ArrowRightLeft size={12} />*/}
+              {/*        Txn*/}
+              {/*      </div>*/}
+              {/*    </TooltipTrigger>*/}
+              {/*    <TooltipContent>Transaction count</TooltipContent>*/}
+              {/*  </Tooltip>*/}
+              {/*</TableHead>*/}
               <TableHead className="text-center">
                 <Tooltip>
                   <TooltipTrigger>
