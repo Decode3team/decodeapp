@@ -2,7 +2,7 @@ import { DefinedApiTimeResolution } from './defined/types';
 
 export const apiPort = process.env.PUBLIC_WEBSOCKET_HOST_PORT
   ? Number(process.env.PUBLIC_WEBSOCKET_HOST_PORT)
-  : 3000;
+  : 8080;
 
 export const hostPort = process.env.NEXT_PUBLIC_HOST_PORT
   ? Number(process.env.NEXT_PUBLIC_HOST_PORT)
