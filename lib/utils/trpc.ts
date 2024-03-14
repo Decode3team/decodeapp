@@ -26,7 +26,7 @@ export const trpc = createTRPCNext<AppRouter>({
           true: wsLink({
             client: createWSClient({
               url: `${wsApiHostUrl}${apiHostUrlPrefix}`,
-              retryDelayMs: () => 20000,
+              retryDelayMs: () => 60000,
               lazy: {
                 enabled: true,
                 closeMs: 10000,

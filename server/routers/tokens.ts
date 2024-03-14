@@ -75,6 +75,7 @@ export const tokensRouter = router({
         });
 
         return () => {
+          console.log(`Unsubscribing to onPairMetadatUpdated:${pairId}`);
           subscription.unsubscribe();
         };
       });

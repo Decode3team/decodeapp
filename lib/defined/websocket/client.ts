@@ -64,6 +64,7 @@ class DefinedWebsocketApiClient {
    */
   public createObservable<T>(operationName: string, payload: SubscribePayload): ZenObservable<T> {
     return new ZenObservable<T>((observer) => {
+      console.log(`Subscribing to ${operationName}:`, payload);
       this.client.subscribe<DefinedApiResponse<T>>(payload, {
         next: (data) => observer.next(data?.data?.[operationName] ?? ({} as T)),
         error: observer.error,
