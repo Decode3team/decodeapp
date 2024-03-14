@@ -16,7 +16,7 @@ export const wsApiProtocol = httpApiProtocol === 'https' ? 'wss' : 'ws';
 export const hostProtocol = process.env.NEXT_PUBLIC_HOST_PORT_PROTOCOL ?? 'https';
 
 export const hostDomain = process.env.NEXT_PUBLIC_HOST_DOMAIN ?? 'decode-dev-as.azurewebsites.net';
-export const apiDomain = 
+export const apiDomain =
   process.env.NEXT_PUBLIC_API_HOST_DOMAIN ?? 'decode-dev-api-as.azurewebsites.net';
 
 export const wsApiHostUrl = `${wsApiProtocol}://${apiDomain}${apiPort === 80 ? '' : `:${apiPort}`}`;
