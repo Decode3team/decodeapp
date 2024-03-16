@@ -5,10 +5,10 @@ class DefinedHttpApiClient {
   private client: GraphQLClient;
 
   private constructor() {
-    this.client = new GraphQLClient(process.env.DEFINED_API_URL ?? '', {
+    this.client = new GraphQLClient(process.env.NEXT_PUBLIC_DEFINED_API_URL ?? '', {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: process.env.DEFINED_API_KEY ?? '',
+        Authorization: process.env.NEXT_PUBLIC_DEFINED_API_KEY ?? '',
       },
     });
   }
@@ -37,7 +37,7 @@ class DefinedHttpApiClient {
   async query<T>(
     operationName: string,
     query: string,
-    variables?: Record<string, any>,
+    variables?: Record<string, unknown>,
   ): Promise<T> {
     try {
       return this.client.request<DefinedApiResponse<T>>(query, variables).then((res) => {

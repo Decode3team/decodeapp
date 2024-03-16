@@ -7,7 +7,7 @@ import { DefinedTopToken } from '@/lib/defined/schema/defined-top-token.schema';
 import RedisManager from '@/lib/redis/manager';
 import { DefinedHttpApiClient } from '@/lib/defined/http/client';
 import { DefinedHttpApiTokenClient } from '@/lib/defined/http/clients/token-client';
-import {DefinedApiTimeResolution, PairId} from '@/lib/defined/types';
+import { DefinedApiTimeResolution, PairId } from '@/lib/defined/types';
 import { DefinedOnPairMetadataUpdated } from '@/lib/defined/schema/websocket/defined-onpairmetadataupdated-schema';
 import { DefinedWebsocketApiClient } from '@/lib/defined/websocket/client';
 import { DefinedWebsocketApiTokenClient } from '@/lib/defined/websocket/clients/token-client';
@@ -19,9 +19,6 @@ const redisSubscriberClient = redisManager.getSubscriberClient().getClient();
 
 const httpClient = DefinedHttpApiClient.getInstance();
 const httpTokenClient = new DefinedHttpApiTokenClient(httpClient, redisClient);
-
-const websocketClient = DefinedWebsocketApiClient.getInstance();
-const wsTokenClient = new DefinedWebsocketApiTokenClient(websocketClient);
 
 export const tokensRouter = router({
   getTopTokens: publicProcedure
@@ -64,11 +61,12 @@ export const tokensRouter = router({
       }),
     )
     .subscription(({ input }) => {
-      return observable<DefinedOnPairMetadataUpdated>((emit) => {
-        const pairId = input.pairId as PairId;
-        const observer = wsTokenClient.onPairMetadataUpdated(pairId);
+      const pairId = input.pairId as PairId;
+      const wsTokenClient = new DefinedWebsocketApiTokenClient();
 
-        const subscription = observer.subscribe({
+      return observable<DefinedOnPairMetadataUpdated>((emit) => {
+
+        wsTokenClient.onPairMetadataUpdated(pairId, {
           next: (data) => {
             emit.next(data);
           },
@@ -76,7 +74,7 @@ export const tokensRouter = router({
 
         return () => {
           console.log(`Unsubscribing to onPairMetadatUpdated:${pairId}`);
-          subscription.unsubscribe();
+          wsTokenClient.client.client.dispose();
         };
       });
     }),
@@ -88,17 +86,18 @@ export const tokensRouter = router({
       }),
     )
     .subscription(({ input }) => {
-      return observable<DefinedOnPriceUpdate>((emit) => {
-        const observer = wsTokenClient.onPriceUpdated(input.tokenAddress, input.networkId);
+      const wsTokenClient = new DefinedWebsocketApiTokenClient();
 
-        const subscription = observer.subscribe({
+      return observable<DefinedOnPriceUpdate>((emit) => {
+        wsTokenClient.onPriceUpdated(input.tokenAddress, input.networkId, {
           next: (data) => {
             emit.next(data);
           },
         });
 
         return () => {
-          subscription.unsubscribe();
+          console.log(`Unsubscribing to onPriceUpdated:${input.tokenAddress}:${input.networkId}`);
+          wsTokenClient.client.client.dispose();
         };
       });
     }),
