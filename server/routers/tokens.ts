@@ -149,7 +149,11 @@ export const tokensRouter = router({
       const { cursor = 0, networkId } = input;
       const offset = cursor ?? 0;
 
-      const items = await httpTokenClient.getLatestTokens(networkId, offset, 50);
+      const items = await httpTokenClient.getTokensByMarketCap({
+        networkId,
+        offset,
+        limit: 50,
+      });
 
       return {
         items,

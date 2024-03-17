@@ -306,6 +306,10 @@ export class DefinedHttpApiTokenClient {
                 volume4,
                 volume12,
                 volume24,
+                uniqueTransactions1,
+                uniqueTransactions4,
+                uniqueTransactions12,
+                uniqueTransactions24,
                 token {
                   name,
                   id,

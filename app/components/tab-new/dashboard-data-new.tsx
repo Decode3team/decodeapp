@@ -7,6 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { trpc } from '@/lib/utils/trpc';
 import TableDataNew from './table-data-new';
 import { DefinedNewToken } from '@/lib/defined/schema/defined-new-token.schema';
+import { Skeleton } from '@/components/ui/skeleton';
 
 function DashboardDataNew({
   resolution,
@@ -15,7 +16,7 @@ function DashboardDataNew({
   resolution: DefinedApiTimeResolution;
   networkId: number;
 }>) {
-  const { data, fetchNextPage } = trpc.tokens.getNewTokes.useInfiniteQuery(
+  const { data, fetchNextPage, isFetching } = trpc.tokens.getNewTokes.useInfiniteQuery(
     {
       networkId,
     },
@@ -56,6 +57,7 @@ function DashboardDataNew({
       <Separator className="mt-2" />
       <DashboadControl resolution={resolution} />
       <TableDataNew data={sortedItems} onPageEnd={fetchNextPage} />
+      {isFetching && <Skeleton className="w-100px h-[24px] mt-2" />}
     </div>
   );
 }
