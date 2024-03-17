@@ -1,30 +1,35 @@
+'use client';
+
 import './globals.css';
 import { ArrowDownUp, BarChart2, Bell, Star, Wallet } from 'lucide-react';
 import { Inter } from 'next/font/google';
-import { cookies } from 'next/headers';
+//import { cookies } from 'next/headers';
 import { ThemeProvider } from '@/providers/theme-provider';
 import { cn } from '@/lib/utils';
-import type { Metadata } from 'next';
-import TRPCProvider from './_trpc/trpc-provider';
+// import type { Metadata } from 'next';
+
 import MainSidebar from '@/components/main/main-sidebar';
-import { serverClient } from './_trpc/server-client';
+
 import { Card } from '@/components/ui/card';
 import NextTopLoader from 'nextjs-toploader';
+import { trpc } from '@/lib/utils/trpc';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
-  title: 'Decode',
-  description: 'on-chain crypto metrics ',
-};
+// export const metadata: Metadata = {
+//   title: 'Decode',
+//   description: 'on-chain crypto metrics ',
+// };
 
-export default async function RootLayout({
+function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const collapsed = cookies().get('react-layout:collapsed');
-  const defaultCollapsed = collapsed ? JSON.parse(collapsed.value) : undefined;
+  //const collapsed = //cookies().get('react-layout:collapsed'); t
+  //const [networks, setNetworks] = useState<DefinedNetwork[]>([]);
+
+  const defaultCollapsed = false; //collapsed ? JSON.parse(collapsed.value) : undefined;
   const mainNav = [
     {
       name: 'Watchlist',
@@ -58,38 +63,34 @@ export default async function RootLayout({
     },
   ];
 
-  const networks = await serverClient['decode-networks']();
+  const networks = trpc.networks.getNetworks.useQuery().data ?? [];
 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(inter.className, 'dark:bg-stone-950')} suppressHydrationWarning>
         <NextTopLoader showSpinner={false} color="#bff311" />
-        <TRPCProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange>
-            <main className="flex flex-row min-h-screen relative">
-              <MainSidebar
-                collapsed={defaultCollapsed}
-                mainNavigation={mainNav}
-                networks={networks}
-              />
-              <div className="flex flex-col grow min-h-screen p-4 max-w-full overflow-x-clip gap-4 justify-center">
-                <Card>
-                  <div className="p-4">
-                    Smog Token Next 100x SOL Meme Coin? Claim the FREE Airdrop!
-                  </div>
-                </Card>
-                <div className="flex grow min-h-screen max-w-full overflow-x-clip justify-center">
-                  {children}
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+          <main className="flex flex-row min-h-screen relative">
+            <MainSidebar
+              collapsed={defaultCollapsed}
+              mainNavigation={mainNav}
+              networks={networks}
+            />
+            <div className="flex flex-col grow min-h-screen p-4 max-w-full overflow-x-clip gap-4 justify-center">
+              <Card>
+                <div className="p-4">
+                  Smog Token Next 100x SOL Meme Coin? Claim the FREE Airdrop!
                 </div>
+              </Card>
+              <div className="flex grow min-h-screen max-w-full overflow-x-clip justify-center">
+                {children}
               </div>
-            </main>
-          </ThemeProvider>
-        </TRPCProvider>
+            </div>
+          </main>
+        </ThemeProvider>
       </body>
     </html>
   );
 }
+
+export default trpc.withTRPC(RootLayout);

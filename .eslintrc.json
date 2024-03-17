@@ -9,13 +9,20 @@
   ],
   "overrides": [
     {
-      "files": ["*.ts", "*.tsx"],
+      "files": [
+        "*.ts",
+        "*.tsx"
+      ],
       "parserOptions": {
         "project": "./tsconfig.json"
       }
     }
   ],
-  "plugins": ["prettier", "react", "react-hooks"],
+  "plugins": [
+    "prettier",
+    "react",
+    "react-hooks"
+  ],
   "rules": {
     "prettier/prettier": [
       "error",
@@ -33,6 +40,7 @@
     "import/order": "off",
     "react/jsx-filename-extension": "off",
     "react/react-in-jsx-scope": "off",
+    "react-hooks/exhaustive-deps": "off",
     "@typescript-eslint/no-unused-vars": "error",
     "@typescript-eslint/no-explicit-any": "warn",
     "newline-before-return": "error",
@@ -40,13 +48,22 @@
       "error",
       {
         "blankLine": "always",
-        "prev": ["const", "let"],
+        "prev": [
+          "const",
+          "let"
+        ],
         "next": "*"
       },
       {
         "blankLine": "any",
-        "prev": ["const", "let"],
-        "next": ["const", "let"]
+        "prev": [
+          "const",
+          "let"
+        ],
+        "next": [
+          "const",
+          "let"
+        ]
       }
     ]
   }

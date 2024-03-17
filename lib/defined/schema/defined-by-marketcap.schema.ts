@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const definedNewTokenSchema = z.object({
+export const definedByMarketcap = z.object({
   priceUSD: z.string(),
   liquidity: z.string(),
   marketCap: z.string(),
@@ -32,11 +32,5 @@ export const definedNewTokenSchema = z.object({
     }),
   }),
 });
-export const definedNewTokenResultSchema = z.object({
-  page: z.number(),
-  count: z.number(),
-  results: z.array(definedNewTokenSchema),
-});
 
-export type DefinedNewToken = z.infer<typeof definedNewTokenSchema>;
-export type DefinedNewTokenResult = z.infer<typeof definedNewTokenResultSchema>;
+export type DefinedByMarketcap = z.infer<typeof definedByMarketcap>;

@@ -1,19 +1,52 @@
 import { DefinedApiTimeResolution } from './defined/types';
+import dotenv from 'dotenv';
 
-export const hostUrl = process.env.NEXT_PUBLIC_HOST_URL ?? 'http://localhost:3000';
+dotenv.config();
+
+export const apiPort = process.env.NEXT_PUBLIC_API_HOST_PORT
+  ? Number(process.env.NEXT_PUBLIC_API_HOST_PORT)
+  : 3001;
+
+export const hostPort = process.env.NEXT_PUBLIC_HOST_PORT
+  ? Number(process.env.NEXT_PUBLIC_HOST_PORT)
+  : 3000;
+
+export const httpApiProtocol = process.env.NEXT_PUBLIC_API_HOST_PROTOCOL ?? 'http';
+export const wsApiProtocol = httpApiProtocol === 'http' ? 'ws' : 'wss';
+export const hostProtocol = process.env.NEXT_PUBLIC_HOST_PROTOCOL ?? 'http';
+
+export const hostDomain = process.env.NEXT_PUBLIC_HOST_DOMAIN ?? 'localhost';
+export const apiDomain = process.env.NEXT_PUBLIC_API_HOST_DOMAIN ?? `localhost`;
+
+export const wsApiHostUrl = `${wsApiProtocol}://${apiDomain}${apiPort === 80 ? '' : `:${apiPort}`}`;
+export const httpApiHostUrl = `${httpApiProtocol}://${apiDomain}${apiPort === 80 ? '' : `:${apiPort}`}`;
+export const hostUrl = `${hostProtocol}://${hostDomain}${hostPort === 80 ? '' : `:${hostPort}`}`;
+export const apiHostUrlPrefix = '/api/trpc';
+
+const getNetworkIdCacheKeyFragment = (networkId?: number) => {
+  if (!networkId) {
+    return '';
+  }
+
+  return `:ntwrkId:${networkId}`;
+};
 
 export namespace CacheKeys {
   export const NETWORK_DATA = 'dfi_ntwk_data';
 
-  export const TOP_TOKEN: Record<DefinedApiTimeResolution, string> = {
-    '1': 'dfi_top_tkn_1m',
-    '5': 'dfi_top_tkn_5m',
-    '15': 'dfi_top_tkn_15m',
-    '30': 'dfi_top_tkn_30m',
-    '60': 'dfi_top_tkn_60m',
-    '240': 'dfi_top_tkn_240m',
-    '720': 'dfi_top_tkn_720m',
-    '1D': 'dfi_top_tkn_1D',
+  export const NEW_TOKEN = (networkId?: number) => {
+    return `dfi_new_tkn` + getNetworkIdCacheKeyFragment(networkId);
+  };
+
+  export const TOP_TOKEN = (resoltuion: DefinedApiTimeResolution, networkId?: number) => {
+    return `dfi_top_tkn:${resoltuion}` + getNetworkIdCacheKeyFragment(networkId);
+  };
+
+  export const TOP_TOKEN_BY_MARKETCAP = (
+    resoltuion: DefinedApiTimeResolution,
+    networkId?: number,
+  ) => {
+    return `dfi_top_tkn_mkt_cap:${resoltuion}` + getNetworkIdCacheKeyFragment(networkId);
   };
 }
 
@@ -42,7 +75,7 @@ export const ApiTimeResolutionValue = {
 export const NetworkNames = {
   eth: 'Ethereum',
   polygon: 'Polygon',
-  binance: 'Binance',
+  bsc: 'Binance',
   arbitrum: 'Arbitrum',
   base: 'Base',
   optimism: 'Optimism',
