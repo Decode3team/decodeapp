@@ -32,9 +32,11 @@ export class Stopwatch {
   getElapsedTime(): number {
     if (this.startTime !== null) {
       const stopTime = this.stopTime !== null ? this.stopTime : Date.now();
+
       return stopTime - this.startTime;
     } else {
       console.error('Stopwatch has not been started.');
+
       return 0;
     }
   }
