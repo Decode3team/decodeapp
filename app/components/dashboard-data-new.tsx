@@ -1,8 +1,7 @@
 'use client';
 
-import DashboardSummary, { DataSummary } from './dashboard-summary';
+import DashboardSummary from './dashboard-summary';
 import DashboadControl from './dashboard-controls';
-import { useState } from 'react';
 import { DefinedApiTimeResolution } from '@/lib/defined/types';
 import { Separator } from '@/components/ui/separator';
 import { trpc } from '@/lib/utils/trpc';
@@ -15,27 +14,25 @@ function DashboardDataNew({
   resolution: DefinedApiTimeResolution;
   networkId: number;
 }>) {
-  const [dataSummary, setDataSummary] = useState({ marketCap: 0, volume: 0, transaction: 0 });
-
-  const { data } = trpc.tokens.getNewTokes.useQuery({
-    networkId,
-    resolution,
-  });
-
-  const handleDataSummaryChange = (data: DataSummary) => {
-    setDataSummary({
-      marketCap: data.marketCap,
-      volume: data.volume,
-      transaction: data.transaction,
-    });
-  };
+  const { data, fetchNextPage } = trpc.tokens.getNewTokes.useInfiniteQuery(
+    {
+      networkId,
+    },
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor ?? null,
+      refetchInterval: 2 * 60 * 1000, // 2 mins
+    },
+  );
 
   return (
     <div className="flex w-full flex-col">
-      <DashboardSummary dataSummary={dataSummary} />
+      <DashboardSummary />
       <Separator className="mt-2" />
       <DashboadControl resolution={resolution} />
-      <TableDataNew onDataSummary={handleDataSummaryChange} data={data ?? []} />
+      <TableDataNew
+        data={data?.pages.flatMap((page) => page.items) ?? []}
+        onPageEnd={fetchNextPage}
+      />
     </div>
   );
 }

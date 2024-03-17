@@ -112,7 +112,7 @@ export class DefinedHttpApiTokenClient {
     return existingData ?? [];
   }
 
-  async getNewTokens(networkId?: number): Promise<DefinedNewToken[]> {
+  async getNewTokens(networkId?: number, offset?: number): Promise<DefinedNewToken[]> {
     const queryName = 'filterTokens';
     const networkFilter = await this.getNetworkFilters(networkId);
 
@@ -120,7 +120,7 @@ export class DefinedHttpApiTokenClient {
       .query<DefinedNewTokenResult>(
         queryName,
         GqlTag`
-          query ($networkFilter: [Int!], $limit: Int) {
+          query ($networkFilter: [Int!], $limit: Int, $offset: Int) {
             ${queryName} (
               filters: {
                 network: $networkFilter, 
@@ -139,6 +139,7 @@ export class DefinedHttpApiTokenClient {
                 direction: DESC
               }
               limit: $limit,
+              offset: $offset,
             ) {
               results {
                 priceUSD,
@@ -178,6 +179,7 @@ export class DefinedHttpApiTokenClient {
         {
           networkFilter,
           limit: 50,
+          offset,
         },
       )
       .then((res) => {
@@ -194,15 +196,60 @@ export class DefinedHttpApiTokenClient {
       });
   }
 
-  async getLatestTokens(networkId?: number) {
+  async getLatestTokens(networkId?: number, offset?: number, limit?: number) {
     const queryName = 'getLatestTokens';
     const networkFilter = await this.getNetworkFilters(networkId);
 
     return await this.client
-      .query<{ items: DefinedLatestToken[] }>(queryName, GqlTag``, {
-        networkFilter,
-        limit: 50,
-      })
+      .query<{ items: DefinedLatestToken[] }>(
+        queryName,
+        GqlTag`
+          query ($networkFilter: [Int!], $limit: Int, $offset: Int) {
+            ${queryName} (
+              networkFilter: $networkFilter,
+              limit: $limit,
+              offset: $offset,
+            ) 
+            {
+              items {
+                id
+                tokenAddress
+                networkId
+                blockNumber
+                transactionIndex
+                traceIndex
+                transactionHash
+                blockHash
+                timeCreated
+                creatorAddress
+                creatorBalance
+                tokenName
+                totalSupply
+                tokenSymbol
+                decimals
+                simulationResults {
+                  buySuccess
+                  buyTax
+                  buyGasUsed
+                  maxBuyAmount
+                  sellSuccess
+                  sellTax
+                  sellGasUsed
+                  maxSellAmount
+                  canTransferOwnership
+                  canRenounceOwnership
+                  isOwnerRenounced
+                  openTradingCall
+                }
+              }
+            }
+          }`,
+        {
+          networkFilter,
+          limit,
+          offset,
+        },
+      )
       .then((res) => {
         const { items: results } = res;
         const uniqueItems = results.reduce((acc, currentItem) => {
@@ -215,11 +262,5 @@ export class DefinedHttpApiTokenClient {
 
         return Array.from(uniqueItems.values());
       });
-  }
-
-  async getNewTokensFromCache(networkId?: number): Promise<DefinedNewToken[]> {
-    const cacheKey = CacheKeys.NEW_TOKEN(networkId);
-
-    return await this.redisClient.getOrSet(cacheKey, async () => this.getNewTokens(networkId));
   }
 }

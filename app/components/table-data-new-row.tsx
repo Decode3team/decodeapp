@@ -12,31 +12,31 @@ function TableDataNewRow({ initialData }: { initialData: DefinedNewToken }) {
   const [token, setToken] = useState<DefinedNewToken>(initialData);
   const [updated, setUpdated] = useState(false);
 
-  trpc.tokens.onPairMetadatUpdated.useSubscription(
-    {
-      pairId: token.pair.id,
-    },
-    {
-      onData(data: DefinedOnPairMetadataUpdated) {
-        setToken({
-          ...token,
-          ...{
-            priceUSD: data.price,
-            liquidity: data.liquidity,
-            change1: data.priceChange1.toString(),
-            change4: data.priceChange4.toString(),
-            change12: data.priceChange12.toString(),
-            change24: data.priceChange24.toString(),
-            volume1: data.volume1,
-            volume4: data.volume4,
-            volume12: data.volume12,
-            volume24: data.volume24,
-          },
-        });
-        setUpdated(true);
-      },
-    },
-  );
+  // trpc.tokens.onPairMetadatUpdated.useSubscription(
+  //   {
+  //     pairId: token.pair.id,
+  //   },
+  //   {
+  //     onData(data: DefinedOnPairMetadataUpdated) {
+  //       setToken({
+  //         ...token,
+  //         ...{
+  //           priceUSD: data.price,
+  //           liquidity: data.liquidity,
+  //           change1: data.priceChange1.toString(),
+  //           change4: data.priceChange4.toString(),
+  //           change12: data.priceChange12.toString(),
+  //           change24: data.priceChange24.toString(),
+  //           volume1: data.volume1,
+  //           volume4: data.volume4,
+  //           volume12: data.volume12,
+  //           volume24: data.volume24,
+  //         },
+  //       });
+  //       setUpdated(true);
+  //     },
+  //   },
+  // );
 
   useEffect(() => {
     if (updated) {

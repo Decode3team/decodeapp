@@ -13,16 +13,15 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { ArrowRightLeft, Tag } from 'lucide-react';
 import { useEffect } from 'react';
 import { DefinedTopToken } from '@/lib/defined/schema/defined-top-token.schema';
-import { DataSummary } from './dashboard-summary';
+import { useDataSummaryStore } from './useDataSummary';
 
 function TableDataTrending({
   data,
-  onDataSummary,
 }: Readonly<{
   data: DefinedTopToken[];
-  onDataSummary: (data: DataSummary) => void;
 }>) {
   const hasData = data.length > 0;
+  const setSummaryValue = useDataSummaryStore((state) => state.setSummaryValue);
 
   useEffect(() => {
     if (data?.length) {
@@ -37,7 +36,7 @@ function TableDataTrending({
         { marketCap: 0, volume: 0, transaction: 0 },
       );
 
-      onDataSummary({ marketCap, volume, transaction });
+      setSummaryValue({ marketCap, volume, transaction });
     }
   }, [data]);
 

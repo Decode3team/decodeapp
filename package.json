@@ -60,6 +60,7 @@
     "numeral": "^2.0.6",
     "postgres": "^3.4.3",
     "react": "^18",
+    "react-bottom-scroll-listener": "^5.1.0",
     "react-dom": "^18",
     "react-resizable-panels": "^2.0.11",
     "react-transition-group": "^4.4.5",

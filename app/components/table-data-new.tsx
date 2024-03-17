@@ -12,12 +12,18 @@ import {
 import { Tag } from 'lucide-react';
 import { DataSummary } from './dashboard-summary';
 import TableDataNewRow from './table-data-new-row';
+import { BottomScrollListener } from 'react-bottom-scroll-listener';
+import { useDataSummaryStore } from './useDataSummary';
 
 function TableDataNew({
   data,
-  onDataSummary,
-}: Readonly<{ data: DefinedNewToken[]; onDataSummary: (data: DataSummary) => void }>) {
+  onPageEnd,
+}: Readonly<{
+  data: DefinedNewToken[];
+  onPageEnd?: () => void;
+}>) {
   const hasData = data.length > 0;
+  const setSummaryValue = useDataSummaryStore((state) => state.setSummaryValue);
 
   useEffect(() => {
     if (data?.length) {
@@ -32,7 +38,7 @@ function TableDataNew({
         { marketCap: 0, volume: 0, transaction: 0 },
       );
 
-      onDataSummary({ marketCap, volume, transaction });
+      setSummaryValue({ marketCap, volume, transaction });
     }
   }, [data]);
 
@@ -45,17 +51,6 @@ function TableDataNew({
               <TableHead className="md:sticky md:left-0 dark:bg-stone-950">Token</TableHead>
               <TableHead>Price</TableHead>
               <TableHead>Volume</TableHead>
-              {/*<TableHead>*/}
-              {/*  <Tooltip>*/}
-              {/*    <TooltipTrigger>*/}
-              {/*      <div className="flex items-center gap-2">*/}
-              {/*        <ArrowRightLeft size={12} />*/}
-              {/*        Txn*/}
-              {/*      </div>*/}
-              {/*    </TooltipTrigger>*/}
-              {/*    <TooltipContent>Transaction count</TooltipContent>*/}
-              {/*  </Tooltip>*/}
-              {/*</TableHead>*/}
               <TableHead className="text-center">
                 <Tooltip>
                   <TooltipTrigger>
@@ -116,6 +111,7 @@ function TableDataNew({
           </TableBody>
         </Table>
       </TooltipProvider>
+      {onPageEnd && data.length > 0 && <BottomScrollListener onBottom={onPageEnd} />}
     </div>
   );
 }

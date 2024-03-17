@@ -9,7 +9,6 @@ import { DefinedHttpApiClient } from '@/lib/defined/http/client';
 import { DefinedHttpApiTokenClient } from '@/lib/defined/http/clients/token-client';
 import { DefinedApiTimeResolution, PairId } from '@/lib/defined/types';
 import { DefinedOnPairMetadataUpdated } from '@/lib/defined/schema/websocket/defined-onpairmetadataupdated-schema';
-import { DefinedWebsocketApiClient } from '@/lib/defined/websocket/client';
 import { DefinedWebsocketApiTokenClient } from '@/lib/defined/websocket/clients/token-client';
 import { DefinedOnPriceUpdate } from '@/lib/defined/schema/websocket/defined-on-price-updated.schema';
 
@@ -65,7 +64,6 @@ export const tokensRouter = router({
       const wsTokenClient = new DefinedWebsocketApiTokenClient();
 
       return observable<DefinedOnPairMetadataUpdated>((emit) => {
-
         wsTokenClient.onPairMetadataUpdated(pairId, {
           next: (data) => {
             emit.next(data);
@@ -105,11 +103,38 @@ export const tokensRouter = router({
   getNewTokes: publicProcedure
     .input(
       z.object({
-        resolution: ResolutionSchema,
         networkId: z.number().optional(),
+        cursor: z.number().nullish(), // is the offset
       }),
     )
     .query(async ({ input }) => {
-      return await httpTokenClient.getNewTokens(input.networkId);
+      const { cursor = 0, networkId } = input;
+      const offset = cursor ?? 0;
+
+      const items = await httpTokenClient.getNewTokens(networkId, offset);
+
+      return {
+        items,
+        nextCursor: offset + items.length,
+      };
+    }),
+
+  getLatestTokens: publicProcedure
+    .input(
+      z.object({
+        networkId: z.number().optional(),
+        cursor: z.number().nullish(), // is the offset
+      }),
+    )
+    .query(async ({ input }) => {
+      const { cursor = 0, networkId } = input;
+      const offset = cursor ?? 0;
+
+      const items = await httpTokenClient.getLatestTokens(networkId, offset, 50);
+
+      return {
+        items,
+        nextCursor: offset + items.length,
+      };
     }),
 });
