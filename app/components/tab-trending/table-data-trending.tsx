@@ -13,7 +13,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { ArrowRightLeft, Tag } from 'lucide-react';
 import { useEffect } from 'react';
 import { DefinedTopToken } from '@/lib/defined/schema/defined-top-token.schema';
-import { useDataSummaryStore } from './useDataSummary';
+import { useDataSummaryStore } from '../useDataSummary';
 
 function TableDataTrending({
   data,

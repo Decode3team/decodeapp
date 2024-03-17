@@ -1,8 +1,8 @@
 'use client';
 
 import TableDataTrending from './table-data-trending';
-import DashboardSummary from './dashboard-summary';
-import DashboadControl from './dashboard-controls';
+import DashboardSummary from '../dashboard-summary';
+import DashboadControl from '../dashboard-controls';
 import { useState } from 'react';
 import { DefinedApiTimeResolution } from '@/lib/defined/types';
 import { Separator } from '@/components/ui/separator';

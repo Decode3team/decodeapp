@@ -67,7 +67,6 @@ function DashboadControl({ resolution }: { resolution: DefinedApiTimeResolution 
       </Tabs>
       <nav className={cn('flex items-center space-x-2')}>
         <Button
-          disabled
           variant={activeTab === 'marketcap' ? 'default' : 'ghost'}
           onClick={() => tabChangeHandler('marketcap')}>
           <BarChart className="mr-2 h-4 w-4" />

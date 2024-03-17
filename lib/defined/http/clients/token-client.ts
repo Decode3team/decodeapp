@@ -10,6 +10,7 @@ import { DefinedHttpApiNetworkClient } from '@/lib/defined/http/clients/network-
 import { RedisClient } from '@/lib/redis/client';
 import { gql as GqlTag } from 'graphql-request';
 import { DefinedLatestToken } from '../../schema/defined-latest-token.schema';
+import { DefinedByMarketcap } from '../../schema/defined-by-marketcap.schema';
 
 export class DefinedHttpApiTokenClient {
   private client!: DefinedHttpApiClient;
@@ -103,13 +104,6 @@ export class DefinedHttpApiTokenClient {
     return await this.redisClient.getOrSet(cacheKey, async () =>
       this.getTopTokens(resolution, networkId),
     );
-  }
-
-  async getTopTokensByMarketCap(resolution: DefinedApiTimeResolution = '60', networkId?: number) {
-    const cacheKey = CacheKeys.TOP_TOKEN_BY_MARKETCAP(resolution, networkId);
-    const existingData = await this.redisClient.get<DefinedTopToken[]>(cacheKey);
-
-    return existingData ?? [];
   }
 
   async getNewTokens(networkId?: number, offset?: number): Promise<DefinedNewToken[]> {
@@ -261,6 +255,81 @@ export class DefinedHttpApiTokenClient {
         }, new Map());
 
         return Array.from(uniqueItems.values());
+      });
+  }
+
+  async getTokensByMarketCap(props: {
+    networkId?: number;
+    volume?: string;
+    offset?: number;
+    limit?: number;
+  }) {
+    const { networkId, volume = 'volume24', offset, limit } = props;
+    const queryName = 'filterTokens';
+    const networkFilter = await this.getNetworkFilters(networkId);
+
+    return await this.client
+      .query<{ results: DefinedByMarketcap[] }>(
+        queryName,
+        GqlTag`
+          query ($networkFilter: [Int!], $limit: Int, $offset: Int) {
+            ${queryName} (
+              filters: {
+                network: $networkFilter,
+                liquidity:{
+                  gte: 100000,
+                },
+                ${volume}: {
+                  gte: 100000
+                },
+                marketCap:{
+                  lte: 100000000000
+                },
+              },
+              rankings: {
+                attribute: marketCap,
+                direction: DESC
+              },
+              limit: $limit,
+              offset: $offset,
+            )
+            {
+              results {
+                priceUSD,
+                liquidity,
+                marketCap,
+                change1,
+                change4,
+                change12,
+                change24,
+                volume1,
+                volume4,
+                volume12,
+                volume24,
+                token {
+                  name,
+                  id,
+                  address,
+                  symbol,
+                  networkId,
+                  info {
+                    imageLargeUrl,
+                    imageSmallUrl,
+                    imageThumbUrl,
+                  }
+                }
+              }
+            }
+          }
+        `,
+        {
+          networkFilter,
+          limit,
+          offset,
+        },
+      )
+      .then(({ results }) => {
+        return results;
       });
   }
 }

@@ -1,8 +1,9 @@
 import { DefinedApiTimeResolution } from '@/lib/defined/types';
-import DashboardDataTrending from './components/dashboard-data-trending';
-import DashboardDataNew from './components/dashboard-data-new';
+import DashboardDataTrending from './components/tab-trending/dashboard-data-trending';
+import DashboardDataNew from './components/tab-new/dashboard-data-new';
+import DashboardDataMarketCap from './components/tab-marketcap/dashboard-data-marketcap';
 
-type InitialDataType = 'trending' | 'new';
+type InitialDataType = 'trending' | 'new' | 'marketcap';
 
 export default function Home({
   searchParams,
@@ -22,6 +23,10 @@ export default function Home({
 
       {activeTab === 'new' && (
         <DashboardDataNew resolution={activeResolution} networkId={networkId} />
+      )}
+
+      {activeTab === 'marketcap' && (
+        <DashboardDataMarketCap resolution={activeResolution} networkId={networkId} />
       )}
     </div>
   );

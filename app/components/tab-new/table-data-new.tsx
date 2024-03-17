@@ -10,10 +10,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tag } from 'lucide-react';
-import { DataSummary } from './dashboard-summary';
 import TableDataNewRow from './table-data-new-row';
 import { BottomScrollListener } from 'react-bottom-scroll-listener';
-import { useDataSummaryStore } from './useDataSummary';
+import { useDataSummaryStore } from '../useDataSummary';
 
 function TableDataNew({
   data,

@@ -4,12 +4,12 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { TableCell, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { trpc } from '@/lib/utils/trpc';
+// import { trpc } from '@/lib/utils/trpc';
 import { useEffect, useState } from 'react';
-import { DefinedOnPairMetadataUpdated } from '@/lib/defined/schema/websocket/defined-onpairmetadataupdated-schema';
+// import { DefinedOnPairMetadataUpdated } from '@/lib/defined/schema/websocket/defined-onpairmetadataupdated-schema';
 
 function TableDataNewRow({ initialData }: { initialData: DefinedNewToken }) {
-  const [token, setToken] = useState<DefinedNewToken>(initialData);
+  const [token] = useState<DefinedNewToken>(initialData);
   const [updated, setUpdated] = useState(false);
 
   // trpc.tokens.onPairMetadatUpdated.useSubscription(

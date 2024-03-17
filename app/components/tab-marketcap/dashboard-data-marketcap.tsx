@@ -1,20 +1,20 @@
 'use client';
 
-import DashboardSummary from './dashboard-summary';
-import DashboadControl from './dashboard-controls';
 import { DefinedApiTimeResolution } from '@/lib/defined/types';
+import DashboardSummary from '../dashboard-summary';
 import { Separator } from '@/components/ui/separator';
+import DashboadControl from '../dashboard-controls';
+import TableDataMarketCap from './table-data-marketcap';
 import { trpc } from '@/lib/utils/trpc';
-import TableDataNew from './table-data-new';
 
-function DashboardDataNew({
+function DashboardDataMarketCap({
   resolution,
   networkId,
 }: Readonly<{
   resolution: DefinedApiTimeResolution;
   networkId: number;
 }>) {
-  const { data, fetchNextPage } = trpc.tokens.getNewTokes.useInfiniteQuery(
+  const { data, fetchNextPage } = trpc.tokens.getTokensByMarketCap.useInfiniteQuery(
     {
       networkId,
     },
@@ -24,17 +24,16 @@ function DashboardDataNew({
     },
   );
 
+  console.log(data);
+
   return (
     <div className="flex w-full flex-col">
       <DashboardSummary />
       <Separator className="mt-2" />
       <DashboadControl resolution={resolution} />
-      <TableDataNew
-        data={data?.pages.flatMap((page) => page.items) ?? []}
-        onPageEnd={fetchNextPage}
-      />
+      <TableDataMarketCap />
     </div>
   );
 }
 
-export default DashboardDataNew;
+export default DashboardDataMarketCap;

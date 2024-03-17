@@ -137,4 +137,23 @@ export const tokensRouter = router({
         nextCursor: offset + items.length,
       };
     }),
+
+  getTokensByMarketCap: publicProcedure
+    .input(
+      z.object({
+        networkId: z.number().optional(),
+        cursor: z.number().nullish(), // is the offset
+      }),
+    )
+    .query(async ({ input }) => {
+      const { cursor = 0, networkId } = input;
+      const offset = cursor ?? 0;
+
+      const items = await httpTokenClient.getLatestTokens(networkId, offset, 50);
+
+      return {
+        items,
+        nextCursor: offset + items.length,
+      };
+    }),
 });
