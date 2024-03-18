@@ -1,17 +1,15 @@
 import { z } from 'zod';
-
-import { router, publicProcedure } from '../trpc';
 import { ResolutionSchema } from '@/lib/zod-schema';
 import { observable } from '@trpc/server/observable';
 import { DefinedTopToken } from '@/lib/defined/schema/defined-top-token.schema';
 import RedisManager from '@/lib/redis/manager';
-import { DefinedHttpApiClient } from '@/lib/defined/http/client';
-import { DefinedHttpApiTokenClient } from '@/lib/defined/http/clients/token-client';
 import { DefinedApiTimeResolution, PairId } from '@/lib/defined/types';
 import { DefinedOnPairMetadataUpdated } from '@/lib/defined/schema/websocket/defined-onpairmetadataupdated-schema';
 import { DefinedWebsocketApiTokenClient } from '@/lib/defined/websocket/clients/token-client';
 import { DefinedOnPriceUpdate } from '@/lib/defined/schema/websocket/defined-on-price-updated.schema';
-import { DefinedFilterTokenParam } from '@/lib/defined/schema/defined-filter-token.schema';
+import { DefinedHttpApiTokenClient } from '@/lib/defined/http/clients/token-client';
+import { DefinedHttpApiClient } from '@/lib/defined/http/client';
+import { publicProcedure, router } from '@/server/trpc';
 
 const redisManager = RedisManager.getInstance();
 const redisClient = redisManager.getClient();
@@ -20,7 +18,7 @@ const redisSubscriberClient = redisManager.getSubscriberClient().getClient();
 const httpClient = DefinedHttpApiClient.getInstance();
 const httpTokenClient = new DefinedHttpApiTokenClient(httpClient, redisClient);
 
-export const tokensRouter = router({
+export const websocketTokenRoutes = router({
   getTopTokens: publicProcedure
     .input(
       z.object({
@@ -31,32 +29,6 @@ export const tokensRouter = router({
     .subscription(async ({ input }) => {
       const resolution: DefinedApiTimeResolution = input.resolution || '1D';
       const eventName = `top-tkn-updated:${resolution}:ntrwkId:${input.networkId}`;
-
-      // const testParams: DefinedFilterTokenParam = {
-      //   filters: {
-      //     volume24: {
-      //       lte: 22582943,
-      //     },
-      //     liquidity: {
-      //       gte: 100000,
-      //     },
-      //     marketCap: {
-      //       lte: 100000000000,
-      //     },
-      //     network: [input.networkId ?? 1],
-      //   },
-      //   rankings: [
-      //     {
-      //       attribute: 'marketCap',
-      //       direction: 'DESC',
-      //     },
-      //   ],
-      //   limit: 1,
-      //   offset: 0,
-      // };
-      //
-      // const test = await httpTokenClient.filterTokens(testParams);
-      // console.log("API >>> ", test);
 
       return observable<DefinedTopToken[]>((emit) => {
         httpTokenClient.getTopTokensFromCache(resolution, input.networkId).then((res) => {
@@ -125,67 +97,5 @@ export const tokensRouter = router({
           wsTokenClient.client.client.dispose();
         };
       });
-    }),
-
-  getNewTokes: publicProcedure
-    .input(
-      z.object({
-        networkId: z.number().optional(),
-        cursor: z.number().nullish(), // is the offset
-      }),
-    )
-    .query(async ({ input }) => {
-      const { cursor = 0, networkId } = input;
-      const offset = cursor ?? 0;
-
-      const items = await httpTokenClient.getNewTokens(networkId, offset);
-
-      return {
-        items,
-        nextCursor: offset + items.length,
-      };
-    }),
-
-  getLatestTokens: publicProcedure
-    .input(
-      z.object({
-        networkId: z.number().optional(),
-        cursor: z.number().nullish(), // is the offset
-      }),
-    )
-    .query(async ({ input }) => {
-      const { cursor = 0, networkId } = input;
-      const offset = cursor ?? 0;
-
-      const items = await httpTokenClient.getLatestTokens(networkId, offset, 50);
-
-      return {
-        items,
-        nextCursor: offset + items.length,
-      };
-    }),
-
-  getTokensByMarketCap: publicProcedure
-    .input(
-      z.object({
-        networkId: z.number().optional(),
-        volume: z.string().optional(),
-        cursor: z.number().nullish(), // is the offset
-      }),
-    )
-    .query(async ({ input }) => {
-      const { cursor = 0, networkId } = input;
-      const offset = cursor ?? 0;
-
-      const items = await httpTokenClient.getTokensByMarketCap({
-        networkId,
-        offset,
-        limit: 50,
-      });
-
-      return {
-        items,
-        nextCursor: offset + items.length,
-      };
     }),
 });

@@ -123,11 +123,11 @@ export type DefinedTokenRankingAttribute = z.infer<typeof definedTokenRankingAtt
 export const definedRankingDirectionSchema = z.enum(['ASC', 'DESC']);
 export type DefinedRankingDirection = z.infer<typeof definedRankingDirectionSchema>;
 
-export const definedTokenRankings = z.object({
+export const definedTokenRankingsSchema = z.object({
   attribute: definedTokenRankingAttributeSchema,
   direction: definedRankingDirectionSchema,
 });
-export type DefinedTokenRankings = z.infer<typeof definedTokenRankings>;
+export type DefinedTokenRankings = z.infer<typeof definedTokenRankingsSchema>;
 
 export const definedFilterTokenParamSchema = z.object({
   limit: z.number().optional(),
@@ -135,7 +135,7 @@ export const definedFilterTokenParamSchema = z.object({
   phrase: z.string().optional(),
   tokens: z.string().array().optional(),
   filters: definedTokenFiltersSchema.optional(),
-  rankings: definedTokenRankings.array().optional(),
+  rankings: definedTokenRankingsSchema.array().optional(),
   statsType: definedTokenPairStatisticsTypeSchema.optional(),
 });
 export type DefinedFilterTokenParam = z.infer<typeof definedFilterTokenParamSchema>;

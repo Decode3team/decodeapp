@@ -1,5 +1,5 @@
 import { DefinedHttpApiClient } from '@/lib/defined/http/client';
-import { router, publicProcedure } from '../trpc';
+import { router, publicProcedure } from '../../trpc';
 import { DefinedHttpApiNetworkClient } from '@/lib/defined/http/clients/network-client';
 import RedisManager from '@/lib/redis/manager';
 
