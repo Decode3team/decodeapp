@@ -11,6 +11,10 @@ import { RedisClient } from '@/lib/redis/client';
 import { gql as GqlTag } from 'graphql-request';
 import { DefinedLatestToken } from '../../schema/defined-latest-token.schema';
 import { DefinedByMarketcap } from '../../schema/defined-by-marketcap.schema';
+import {
+  DefinedFilterTokenParam,
+  DefinedFilterTokenResult,
+} from '@/lib/defined/schema/defined-filter-token.schema';
 
 export class DefinedHttpApiTokenClient {
   private client!: DefinedHttpApiClient;
@@ -330,6 +334,79 @@ export class DefinedHttpApiTokenClient {
           networkFilter,
           limit,
           offset,
+        },
+      )
+      .then(({ results }) => {
+        return results;
+      });
+  }
+
+  async filterTokens(props: DefinedFilterTokenParam): Promise<DefinedFilterTokenResult[]> {
+    const queryName = 'filterTokens';
+
+    //const filters = props.filters;
+    return await this.client
+      .query<{ results: DefinedFilterTokenResult[] }>(
+        queryName,
+        GqlTag`
+          query (
+          $filters: TokenFilters, 
+          $statsType: TokenPairStatisticsType,
+          $rankings: [TokenRanking],
+          $tokens: [String],
+          $phrase: String, 
+          $limit: Int, 
+          $offset: Int) {
+            ${queryName} (
+              filters: $filters,
+              rankings: $rankings,
+              limit: $limit,
+              offset: $offset,
+              statsType: $statsType,
+              tokens: $tokens,
+              phrase: $phrase
+            )
+            {
+              results {
+                priceUSD,
+                liquidity,
+                marketCap,
+                change1,
+                change4,
+                change12,
+                change24,
+                volume1,
+                volume4,
+                volume12,
+                volume24,
+                uniqueTransactions1,
+                uniqueTransactions4,
+                uniqueTransactions12,
+                uniqueTransactions24,
+                token {
+                  name,
+                  id,
+                  address,
+                  symbol,
+                  networkId,
+                  info {
+                    imageLargeUrl,
+                    imageSmallUrl,
+                    imageThumbUrl,
+                  }
+                }
+              }
+            }
+          }
+        `,
+        {
+          filters: props.filters,
+          rankings: props.rankings,
+          limit: props.limit,
+          offset: props.offset,
+          phrase: props.phrase,
+          statsType: props.statsType,
+          tokens: props.tokens,
         },
       )
       .then(({ results }) => {

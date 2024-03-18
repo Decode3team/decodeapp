@@ -11,6 +11,7 @@ import { DefinedApiTimeResolution, PairId } from '@/lib/defined/types';
 import { DefinedOnPairMetadataUpdated } from '@/lib/defined/schema/websocket/defined-onpairmetadataupdated-schema';
 import { DefinedWebsocketApiTokenClient } from '@/lib/defined/websocket/clients/token-client';
 import { DefinedOnPriceUpdate } from '@/lib/defined/schema/websocket/defined-on-price-updated.schema';
+import { DefinedFilterTokenParam } from '@/lib/defined/schema/defined-filter-token.schema';
 
 const redisManager = RedisManager.getInstance();
 const redisClient = redisManager.getClient();
@@ -30,6 +31,32 @@ export const tokensRouter = router({
     .subscription(async ({ input }) => {
       const resolution: DefinedApiTimeResolution = input.resolution || '1D';
       const eventName = `top-tkn-updated:${resolution}:ntrwkId:${input.networkId}`;
+
+      // const testParams: DefinedFilterTokenParam = {
+      //   filters: {
+      //     volume24: {
+      //       lte: 22582943,
+      //     },
+      //     liquidity: {
+      //       gte: 100000,
+      //     },
+      //     marketCap: {
+      //       lte: 100000000000,
+      //     },
+      //     network: [input.networkId ?? 1],
+      //   },
+      //   rankings: [
+      //     {
+      //       attribute: 'marketCap',
+      //       direction: 'DESC',
+      //     },
+      //   ],
+      //   limit: 1,
+      //   offset: 0,
+      // };
+      //
+      // const test = await httpTokenClient.filterTokens(testParams);
+      // console.log("API >>> ", test);
 
       return observable<DefinedTopToken[]>((emit) => {
         httpTokenClient.getTopTokensFromCache(resolution, input.networkId).then((res) => {
@@ -142,6 +169,7 @@ export const tokensRouter = router({
     .input(
       z.object({
         networkId: z.number().optional(),
+        volume: z.string().optional(),
         cursor: z.number().nullish(), // is the offset
       }),
     )
