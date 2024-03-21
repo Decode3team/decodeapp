@@ -10,9 +10,7 @@ import { apiPort, apiHostUrlPrefix, hostUrl, wsApiHostUrl } from '@/lib/constant
 
 const app = express();
 
-console.log(hostUrl);
-
-app.use(cors()); 
+app.use(cors({ origin: hostUrl }));
 
 app.use(
   apiHostUrlPrefix,
