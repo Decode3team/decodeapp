@@ -12,7 +12,7 @@ const app = express();
 
 console.log(hostUrl);
 
-app.use(cors({ origin: hostUrl }));
+app.use(cors()); 
 
 app.use(
   apiHostUrlPrefix,
