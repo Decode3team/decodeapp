@@ -2,8 +2,13 @@ import { DefinedApiTimeResolution } from '@/lib/defined/types';
 import DashboardDataTrending from './components/tab-trending/dashboard-data-trending';
 import DashboardDataNew from './components/tab-new/dashboard-data-new';
 import DashboardDataMarketCap from './components/tab-marketcap/dashboard-data-marketcap';
+import { Metadata } from 'next';
 
 type InitialDataType = 'trending' | 'new' | 'marketcap';
+
+export const metadata: Metadata = {
+  title: 'Decode | Home',
+};
 
 export default function Home({
   searchParams,
