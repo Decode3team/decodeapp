@@ -137,6 +137,7 @@ export const definedFilterTokenParamSchema = z.object({
   filters: definedTokenFiltersSchema.optional(),
   rankings: definedTokenRankingsSchema.array().optional(),
   statsType: definedTokenPairStatisticsTypeSchema.optional(),
+  fields: z.string().optional(),
 });
 export type DefinedFilterTokenParam = z.infer<typeof definedFilterTokenParamSchema>;
 

@@ -4,6 +4,7 @@ import { DefinedHttpApiClient } from '@/lib/defined/http/client';
 import { DefinedHttpApiTokenClient } from '@/lib/defined/http/clients/token-client';
 import { definedFilterTokenParamSchema } from '@/lib/defined/schema/defined-filter-token.schema';
 import { publicProcedure, router } from '@/server/trpc';
+import { definedDetailedPairStatsParamSchema } from '@/lib/defined/schema/defined-detailed-pair-stats.schema';
 
 const redisManager = RedisManager.getInstance();
 const redisClient = redisManager.getClient();
@@ -77,4 +78,9 @@ export const httpTokenRoutes = router({
   filterTokens: publicProcedure.input(definedFilterTokenParamSchema).query(async ({ input }) => {
     return await httpTokenClient.filterTokens(input);
   }),
+  getTokenPairDetails: publicProcedure
+    .input(definedDetailedPairStatsParamSchema)
+    .query(async ({ input }) => {
+      return await httpTokenClient.getDetailedPairStats(input);
+    }),
 });

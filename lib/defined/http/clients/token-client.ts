@@ -9,12 +9,16 @@ import {
 import { DefinedHttpApiNetworkClient } from '@/lib/defined/http/clients/network-client';
 import { RedisClient } from '@/lib/redis/client';
 import { gql as GqlTag } from 'graphql-request';
-import { DefinedLatestToken } from '../../schema/defined-latest-token.schema';
-import { DefinedByMarketcap } from '../../schema/defined-by-marketcap.schema';
+import { DefinedLatestToken } from '@/lib/defined/schema/defined-latest-token.schema';
+import { DefinedByMarketcap } from '@/lib/defined/schema/defined-by-marketcap.schema';
 import {
   DefinedFilterTokenParam,
   DefinedFilterTokenResult,
 } from '@/lib/defined/schema/defined-filter-token.schema';
+import {
+  DefinedDetailedPairStats,
+  DefinedDetailedPairStatsParam,
+} from '@/lib/defined/schema/defined-detailed-pair-stats.schema';
 
 export class DefinedHttpApiTokenClient {
   private client!: DefinedHttpApiClient;
@@ -343,6 +347,34 @@ export class DefinedHttpApiTokenClient {
 
   async filterTokens(props: DefinedFilterTokenParam): Promise<DefinedFilterTokenResult[]> {
     const queryName = 'filterTokens';
+    const defaultFields = `priceUSD,
+      liquidity,
+      marketCap,
+      change1,
+      change4,
+      change12,
+      change24,
+      volume1,
+      volume4,
+      volume12,
+      volume24,
+      uniqueTransactions1,
+      uniqueTransactions4,
+      uniqueTransactions12,
+      uniqueTransactions24,
+      token {
+        name,
+        id,
+        address,
+        symbol,
+        networkId,
+        info {
+          imageLargeUrl,
+          imageSmallUrl,
+          imageThumbUrl,
+        }
+      }
+    }`;
 
     //const filters = props.filters;
     return await this.client
@@ -367,35 +399,7 @@ export class DefinedHttpApiTokenClient {
               phrase: $phrase
             )
             {
-              results {
-                priceUSD,
-                liquidity,
-                marketCap,
-                change1,
-                change4,
-                change12,
-                change24,
-                volume1,
-                volume4,
-                volume12,
-                volume24,
-                uniqueTransactions1,
-                uniqueTransactions4,
-                uniqueTransactions12,
-                uniqueTransactions24,
-                token {
-                  name,
-                  id,
-                  address,
-                  symbol,
-                  networkId,
-                  info {
-                    imageLargeUrl,
-                    imageSmallUrl,
-                    imageThumbUrl,
-                  }
-                }
-              }
+              results ${props.fields ?? defaultFields}
             }
           }
         `,
@@ -407,6 +411,458 @@ export class DefinedHttpApiTokenClient {
           phrase: props.phrase,
           statsType: props.statsType,
           tokens: props.tokens,
+        },
+      )
+      .then(({ results }) => {
+        return results;
+      });
+  }
+
+  async getDetailedPairStats(
+    props: DefinedDetailedPairStatsParam,
+  ): Promise<DefinedDetailedPairStats[]> {
+    const queryName = 'getDetailedPairStats';
+    const defaultFields = `{
+      bucketCount,
+      lastTransaction,
+      networkId,
+      pair {
+        address,
+        createdAt,
+        exchangeHash,
+        fee,
+        id,
+        networkId,
+        tickSpacing,
+        token0,
+        token0Data {
+          address,
+          name ,
+          networkId,
+          socialLinks {
+            bitcointalk,
+            blog,
+            coingecko,
+            coinmarketcap,
+            discord,
+            email,
+            facebook,
+            github,
+            instagram,
+            linkedin,
+            reddit,
+            slack,
+            telegram,
+            twitch,
+            twitter,
+            website,
+            wechat,
+            whitepaper,
+            youtube,
+          },
+          symbol,
+          totalSupply,
+          info {
+            circulatingSupply,
+            isScam,
+            imageLargeUrl,
+            imageSmallUrl,
+            imageThumbUrl 
+          }
+        },
+        token1,
+        token1Data {
+          address,
+          name ,
+          networkId,
+          socialLinks {
+            bitcointalk,
+            blog,
+            coingecko,
+            coinmarketcap,
+            discord,
+            email,
+            facebook,
+            github,
+            instagram,
+            linkedin,
+            reddit,
+            slack,
+            telegram,
+            twitch,
+            twitter,
+            website,
+            wechat,
+            whitepaper,
+            youtube,
+          },
+          symbol,
+          totalSupply,
+          info {
+            circulatingSupply,
+            isScam,
+            imageLargeUrl,
+            imageSmallUrl,
+            imageThumbUrl 
+          }
+        }
+      }
+      pairAddress,
+      queryTimestamp
+      stats_day1 {
+        statsNonCurrency {
+          buyers {
+            change,
+            currentValue,
+            previousValue
+          },
+          buys {
+            change,
+            currentValue,
+            previousValue
+          },
+          sellers {
+            change,
+            currentValue,
+            previousValue
+          },
+          sells {
+            change,
+            currentValue,
+            previousValue
+          },
+          traders {
+            change,
+            currentValue,
+            previousValue
+          },
+          transactions {
+            change,
+            currentValue,
+            previousValue
+          }
+        },
+        statsUsd {
+          buyVolume {
+            change,
+            currentValue,
+            previousValue
+          }
+          close {
+            change,
+            currentValue,
+            previousValue
+          }
+          highest {
+            change,
+            currentValue,
+            previousValue
+          }
+          liquidity {
+            change,
+            currentValue,
+            previousValue
+          }
+          lowest {
+            change,
+            currentValue,
+            previousValue
+          }
+          open {
+            change,
+            currentValue,
+            previousValue
+          }
+          sellVolume {
+            change,
+            currentValue,
+            previousValue
+          }
+          volume {
+            change,
+            currentValue,
+            previousValue
+          }
+        },
+        timestamps {
+          start
+          end
+        }
+      },
+      stats_hour1 {
+        statsNonCurrency {
+          buyers {
+            change,
+            currentValue,
+            previousValue
+          },
+          buys {
+            change,
+            currentValue,
+            previousValue
+          },
+          sellers {
+            change,
+            currentValue,
+            previousValue
+          },
+          sells {
+            change,
+            currentValue,
+            previousValue
+          },
+          traders {
+            change,
+            currentValue,
+            previousValue
+          },
+          transactions {
+            change,
+            currentValue,
+            previousValue
+          }
+        },
+        statsUsd {
+          buyVolume {
+            change,
+            currentValue,
+            previousValue
+          }
+          close {
+            change,
+            currentValue,
+            previousValue
+          }
+          highest {
+            change,
+            currentValue,
+            previousValue
+          }
+          liquidity {
+            change,
+            currentValue,
+            previousValue
+          }
+          lowest {
+            change,
+            currentValue,
+            previousValue
+          }
+          open {
+            change,
+            currentValue,
+            previousValue
+          }
+          sellVolume {
+            change,
+            currentValue,
+            previousValue
+          }
+          volume {
+            change,
+            currentValue,
+            previousValue
+          }
+        },
+        timestamps {
+          start
+          end
+        }
+      },
+      stats_hour4 {
+        statsNonCurrency {
+          buyers {
+            change,
+            currentValue,
+            previousValue
+          },
+          buys {
+            change,
+            currentValue,
+            previousValue
+          },
+          sellers {
+            change,
+            currentValue,
+            previousValue
+          },
+          sells {
+            change,
+            currentValue,
+            previousValue
+          },
+          traders {
+            change,
+            currentValue,
+            previousValue
+          },
+          transactions {
+            change,
+            currentValue,
+            previousValue
+          }
+        },
+        statsUsd {
+          buyVolume {
+            change,
+            currentValue,
+            previousValue
+          }
+          close {
+            change,
+            currentValue,
+            previousValue
+          }
+          highest {
+            change,
+            currentValue,
+            previousValue
+          }
+          liquidity {
+            change,
+            currentValue,
+            previousValue
+          }
+          lowest {
+            change,
+            currentValue,
+            previousValue
+          }
+          open {
+            change,
+            currentValue,
+            previousValue
+          }
+          sellVolume {
+            change,
+            currentValue,
+            previousValue
+          }
+          volume {
+            change,
+            currentValue,
+            previousValue
+          }
+        },
+        timestamps {
+          start
+          end
+        }
+      },
+      stats_hour12 {
+        statsNonCurrency {
+          buyers {
+            change,
+            currentValue,
+            previousValue
+          },
+          buys {
+            change,
+            currentValue,
+            previousValue
+          },
+          sellers {
+            change,
+            currentValue,
+            previousValue
+          },
+          sells {
+            change,
+            currentValue,
+            previousValue
+          },
+          traders {
+            change,
+            currentValue,
+            previousValue
+          },
+          transactions {
+            change,
+            currentValue,
+            previousValue
+          }
+        },
+        statsUsd {
+          buyVolume {
+            change,
+            currentValue,
+            previousValue
+          }
+          close {
+            change,
+            currentValue,
+            previousValue
+          }
+          highest {
+            change,
+            currentValue,
+            previousValue
+          }
+          liquidity {
+            change,
+            currentValue,
+            previousValue
+          }
+          lowest {
+            change,
+            currentValue,
+            previousValue
+          }
+          open {
+            change,
+            currentValue,
+            previousValue
+          }
+          sellVolume {
+            change,
+            currentValue,
+            previousValue
+          }
+          volume {
+            change,
+            currentValue,
+            previousValue
+          }
+        },
+        timestamps {
+          start
+          end
+        }
+      }
+    }`;
+
+    return await this.client
+      .query<{ results: DefinedDetailedPairStats[] }>(
+        queryName,
+        GqlTag`
+          query (
+          $bucketCount: Int, 
+          $durations: [DetailedPairStatsDuration],
+          $networkId: Int!,
+          $pairAddress:	String!,
+          $statsType: TokenPairStatisticsType, 
+          $timestamp: Int, 
+          $tokenOfInterest: TokenOfInterest) {
+            ${queryName} (
+              bucketCount: $bucketCount,
+              durations: $durations,
+              networkId: $networkId,
+              pairAddress: $pairAddress,
+              statsType: $statsType,
+              timestamp: $timestamp,
+              tokenOfInterest: $tokenOfInterest
+            )
+            ${props.fields ?? defaultFields}
+          }
+        `,
+        {
+          bucketCount: props.bucketCount,
+          durations: props.durations,
+          networkId: props.networkId,
+          pairAddress: props.pairAddress,
+          statsType: props.statsType,
+          timestamp: props.timestamp,
+          tokenOfInterest: props.tokenOfInterest,
         },
       )
       .then(({ results }) => {

@@ -23,4 +23,4 @@ export const definedEnhancedTokenSchema = z.object({
   symbol: z.string().optional(),
   socialLinks: definedSocialLinksSchema.optional(),
 });
-export type DefinedEnhancedTokenSchema = z.infer<typeof definedEnhancedTokenSchema>;
+export type DefinedEnhancedToken = z.infer<typeof definedEnhancedTokenSchema>;
