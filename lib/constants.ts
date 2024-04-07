@@ -86,3 +86,17 @@ export const NetworkNames = {
   moonbeam: 'Moonbeam',
   celo: 'Celo',
 };
+
+export const NetworkNamesById = {
+  '1': 'eth',
+  '56': 'binance',
+  '42161': 'arbitrum',
+  '8453': 'base',
+  '10': 'optimism',
+  '168587773': 'blast',
+  '43114': 'avalanche',
+  '250': 'fantom',
+  '5000': 'mantle',
+  '1284': 'moonbeam',
+  '42220': 'celo',
+};

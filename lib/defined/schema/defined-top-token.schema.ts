@@ -20,5 +20,6 @@ export const definedTopTokenSchema = z.object({
   txnCount12: z.number(),
   txnCount24: z.number(),
   marketCap: z.string(),
+  networkId: z.number(),
 });
 export type DefinedTopToken = z.infer<typeof definedTopTokenSchema>;

@@ -14,12 +14,15 @@ import { ArrowRightLeft, Tag } from 'lucide-react';
 import { useEffect } from 'react';
 import { DefinedTopToken } from '@/lib/defined/schema/defined-top-token.schema';
 import { useDataSummaryStore } from '../useDataSummary';
+import { NetworkNamesById } from '@/lib/constants';
+import { useRouter } from 'next/navigation';
 
 function TableDataTrending({
   data,
 }: Readonly<{
   data: DefinedTopToken[];
 }>) {
+  const router = useRouter();
   const hasData = data.length > 0;
   const setSummaryValue = useDataSummaryStore((state) => state.setSummaryValue);
 
@@ -39,6 +42,14 @@ function TableDataTrending({
       setSummaryValue({ marketCap, volume, transaction });
     }
   }, [data]);
+
+  const tokenAnalyticsRedirect = (token: DefinedTopToken) => {
+    const network = NetworkNamesById[String(token.networkId) as keyof typeof NetworkNamesById];
+    const address = token.address;
+    const queryParams = new URLSearchParams({ network, address }).toString();
+
+    router.push(`/token-analytics?${queryParams}`);
+  };
 
   return (
     <div className="flex w-full rounded-md border overflow-x-auto">
@@ -143,7 +154,9 @@ function TableDataTrending({
           <TableBody>
             {hasData &&
               data.map((token) => (
-                <TableRow key={token.address + token.name}>
+                <TableRow
+                  key={token.address + token.name}
+                  onClick={() => tokenAnalyticsRedirect(token)}>
                   <TableCell className="sticky left-0 dark:bg-stone-950">
                     <div className="flex items-center gap-2">
                       <Avatar className="w-[32px] h-[32px]">

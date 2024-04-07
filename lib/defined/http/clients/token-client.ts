@@ -66,6 +66,7 @@ export class DefinedHttpApiTokenClient {
               volume
               liquidity
               price
+              network
               priceChange
               priceChange1
               priceChange4
@@ -76,6 +77,7 @@ export class DefinedHttpApiTokenClient {
               txnCount12
               txnCount24
               marketCap
+              networkId
             }
           }`,
         {

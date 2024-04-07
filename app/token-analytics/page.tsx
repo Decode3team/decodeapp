@@ -13,7 +13,7 @@ export default function TokenAnalytics({
   const { tab } = searchParams;
 
   return (
-    <div className="py-4 flex flex-wrap w-full dark:bg-stone-950 z-50 gap-2">
+    <div className="flex w-full">
       <TabHandler defaultTab={tab} />
     </div>
   );

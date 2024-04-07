@@ -14,6 +14,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import LiveNumber from '@/components/live-number';
+import { useRouter } from 'next/navigation';
+import { NetworkNamesById } from '@/lib/constants';
 
 function TableDataMarketCap({
   data,
@@ -24,6 +26,7 @@ function TableDataMarketCap({
   volume: keyof DefinedByMarketcap;
   onPageEnd?: () => void;
 }) {
+  const router = useRouter();
   const hasData = data.length > 0;
   const setSummaryValue = useDataSummaryStore((state) => state.setSummaryValue);
 
@@ -51,6 +54,14 @@ function TableDataMarketCap({
     volume24: 'change24',
   };
 
+  const tokenAnalyticsRedirect = (token: DefinedByMarketcap['token']) => {
+    const network = NetworkNamesById[String(token.networkId) as keyof typeof NetworkNamesById];
+    const address = token.address;
+    const queryParams = new URLSearchParams({ network, address }).toString();
+
+    router.push(`/token-analytics?${queryParams}`);
+  };
+
   return (
     <div>
       <div className="flex w-full rounded-md border overflow-x-auto">
@@ -69,7 +80,9 @@ function TableDataMarketCap({
             <TableBody>
               {hasData &&
                 data.map((token) => (
-                  <TableRow key={token.token.id}>
+                  <TableRow
+                    key={token.token.id}
+                    onClick={() => tokenAnalyticsRedirect(token.token)}>
                     <TableCell className="sticky left-0 dark:bg-stone-950">
                       <div className="flex items-center gap-2">
                         <Avatar className="w-[32px] h-[32px]">

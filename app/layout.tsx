@@ -76,13 +76,13 @@ function RootLayout({
               mainNavigation={mainNav}
               networks={networks}
             />
-            <div className="flex flex-col grow min-h-screen p-4 max-w-full overflow-x-clip gap-4 justify-center">
+            <div className="flex flex-col grow p-4 max-w-full overflow-x-clip gap-4 justify-center">
               <Card>
                 <div className="p-4">
                   Smog Token Next 100x SOL Meme Coin? Claim the FREE Airdrop!
                 </div>
               </Card>
-              <div className="flex grow min-h-screen max-w-full overflow-x-clip justify-center">
+              <div id="content-area" className="flex grow max-w-full overflow-x-clip justify-cente">
                 {children}
               </div>
             </div>

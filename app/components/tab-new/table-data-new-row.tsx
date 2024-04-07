@@ -6,9 +6,12 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 // import { trpc } from '@/lib/utils/trpc';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { NetworkNamesById } from '@/lib/constants';
 // import { DefinedOnPairMetadataUpdated } from '@/lib/defined/schema/websocket/defined-onpairmetadataupdated-schema';
 
 function TableDataNewRow({ initialData }: { initialData: DefinedNewToken }) {
+  const router = useRouter();
   const [token] = useState<DefinedNewToken>(initialData);
   const [updated, setUpdated] = useState(false);
 
@@ -48,10 +51,18 @@ function TableDataNewRow({ initialData }: { initialData: DefinedNewToken }) {
     }
   }, [updated]);
 
+  const tokenAnalyticsRedirect = (token: DefinedNewToken['token']) => {
+    const network = NetworkNamesById[String(token.networkId) as keyof typeof NetworkNamesById];
+    const address = token.address;
+    const queryParams = new URLSearchParams({ network, address }).toString();
+
+    router.push(`/token-analytics?${queryParams}`);
+  };
+
   return (
     <TableRow
-      key={token.token.id}
-      className={`${updated ? 'dark:bg-stone-800' : 'dark:bg-stone-950'} transition-colors duration-300`}>
+      className={`${updated ? 'dark:bg-stone-800' : 'dark:bg-stone-950'} transition-colors duration-300`}
+      onClick={() => tokenAnalyticsRedirect(token.token)}>
       <TableCell className="sticky left-0 dark:bg-stone-950">
         <div className="flex items-center gap-2">
           <Avatar className="w-[32px] h-[32px]">
