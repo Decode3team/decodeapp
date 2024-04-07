@@ -19,9 +19,7 @@ import {
   DefinedDetailedPairStats,
   DefinedDetailedPairStatsParam,
 } from '@/lib/defined/schema/defined-detailed-pair-stats.schema';
-import  {
-  DefinedDefaultFieldsProvider
-} from '@/lib/providers/defined-default-fields-provider';
+import { DefinedDefaultFieldsProvider } from '@/lib/providers/defined-default-fields-provider';
 
 export class DefinedHttpApiTokenClient {
   private client!: DefinedHttpApiClient;
